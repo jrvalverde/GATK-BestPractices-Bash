@@ -6,9 +6,9 @@ www.cnb.csic.es
 
 These scripts are based on publicly available works:
 
-  The gatk*.sh scripts are based on the published workflows available from the GATK team
+* The gatk*.sh scripts are based on the published workflows available from the GATK team
 
-  The scripts in NYU are based on published scripts distributed by NYU
+* The scripts in NYU are based on published scripts distributed by NYU
 
 ## GATK-Best-Practices based workflows
  
@@ -48,7 +48,7 @@ of GATK, and if it fails to run, you have two options
      much: we are usually working on several projects and may not have spare time, 
      but if we can, we'll try to fix them
      
- * _a potentially better option_ is ask us to collaborate with you on the analysis of
+ * _a potentially better option_ is to ask us to collaborate with you on the analysis of
      your data: this would provide us with an enticement and a justification to
      continue working on this.
 
