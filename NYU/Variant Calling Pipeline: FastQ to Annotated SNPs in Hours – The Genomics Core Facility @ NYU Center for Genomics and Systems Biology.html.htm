@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="pingback" href="https://gencore.bio.nyu.edu/xmlrpc.php">
+<!-- JM Twitter Cards by Julien Maury 10.0.1 -->
+<meta name="twitter:card" content="summary">
+<!-- [(-_-)@ Missing critical option ! @(-_-)] -->
+<!-- [(-_-)@ Missing critical option ! @(-_-)] -->
+<meta name="twitter:title" content="Variant Calling Pipeline: FastQ to Annotated SNPs in Hours">
+<meta name="twitter:description" content="Identifying genomic variants, such as single nucleotide polymorphisms (SNPs) and DNA insertions and deletions (indels), can play an important role in scientific discovery. To this end, a pipeline has">
+<meta name="twitter:image" content="https://gencore.bio.nyu.edu/wp-content/uploads/2016/03/snps-in-igv-featured-image.png">
+<!-- /JM Twitter Cards by Julien Maury 10.0.1 -->
+<title>Variant Calling Pipeline: FastQ to Annotated SNPs in Hours &#8211; The Genomics Core Facility @ NYU Center for Genomics and Systems Biology</title>
+<link rel='dns-prefetch' href='//ajax.googleapis.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="The Genomics Core Facility @ NYU Center for Genomics and Systems Biology &raquo; Feed" href="https://gencore.bio.nyu.edu/feed/" />
+<link rel="alternate" type="application/rss+xml" title="The Genomics Core Facility @ NYU Center for Genomics and Systems Biology &raquo; Comments Feed" href="https://gencore.bio.nyu.edu/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="The Genomics Core Facility @ NYU Center for Genomics and Systems Biology &raquo; Variant Calling Pipeline: FastQ to Annotated SNPs in Hours Comments Feed" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.3\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.3\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/gencore.bio.nyu.edu\/wp-includes\/js\/wp-emoji-release.min.js?ver=889659ad1983a80b923e359fd522f913"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55358,56794,8205,9794,65039],[55358,56794,8203,9794,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='contact-form-7-css'  href='https://gencore.bio.nyu.edu/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.1.3' type='text/css' media='all' />
+<link rel='stylesheet' id='social_butterfly_css-css'  href='https://gencore.bio.nyu.edu/wp-content/plugins/social-butterfly/css/style.css?ver=889659ad1983a80b923e359fd522f913' type='text/css' media='all' />
+<link rel='stylesheet' id='jquery-ui-style-css'  href='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/ui-darkness/jquery-ui.css?ver=889659ad1983a80b923e359fd522f913' type='text/css' media='all' />
+<link rel='stylesheet' id='radiate-style-css'  href='https://gencore.bio.nyu.edu/wp-content/themes/radiate-child/style.css?ver=889659ad1983a80b923e359fd522f913' type='text/css' media='all' />
+<link rel='stylesheet' id='radiate-google-fonts-css'  href='//fonts.googleapis.com/css?family=Roboto%7CMerriweather%3A400%2C300&#038;ver=889659ad1983a80b923e359fd522f913' type='text/css' media='all' />
+<link rel='stylesheet' id='radiate-genericons-css'  href='https://gencore.bio.nyu.edu/wp-content/themes/radiate/genericons/genericons.css?ver=3.3.1' type='text/css' media='all' />
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var s2AjaxScriptStrings = {"ajaxurl":"https:\/\/gencore.bio.nyu.edu\/wp-admin\/admin-ajax.php","title":"Subscribe to this blog","nonce":"ffcb30e681"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/plugins/subscribe2/include/s2-ajax.min.js?ver=1.3'></script>
+<link rel='https://api.w.org/' href='https://gencore.bio.nyu.edu/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://gencore.bio.nyu.edu/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://gencore.bio.nyu.edu/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Start the New Year Off Right: How to Choose the Right Sequencer' href='https://gencore.bio.nyu.edu/start-the-new-year-off-right-how-to-choose-the-right-sequencer/' />
+<link rel='next' title='Node to Joy: Maximize Your Performance on the HPC' href='https://gencore.bio.nyu.edu/node-to-joy/' />
+
+<link rel="canonical" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/" />
+<link rel='shortlink' href='https://gencore.bio.nyu.edu/?p=700' />
+<link rel="alternate" type="application/json+oembed" href="https://gencore.bio.nyu.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgencore.bio.nyu.edu%2Fvariant-calling-pipeline%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://gencore.bio.nyu.edu/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgencore.bio.nyu.edu%2Fvariant-calling-pipeline%2F&#038;format=xml" />
+		<style type="text/css" id="custom-background-css">
+		body.custom-background { background: none !important; } #content { background-color: #EAEAEA; background-image: url('https://gencore.bio.nyu.edu/wp-content/uploads/2018/08/stripes-light.png'); background-repeat: repeat; background-position: top left; background-attachment: fixed; }
+		</style>
+			<style type="text/css">.site-title{
+font-size:1em!important;
+font-weight:bold;
+margin-top:15px
+}
+.clearfix{
+opacity:1!important;
+z-index:2147483649;
+}
+.hentry, .widget, .page_text_container{
+border-radius:10px!important;
+border:2px solid #f2f2f2;
+}
+.wp-caption-text{
+background-color: #f7f7f7!important;
+margin-bottom: 0!important;padding: 7px 8px;text-align: left;color: #586069;border-top: 1px solid #ccc;font-size: 12px;
+}</style>
+	<style type="text/css" id="custom-background-css">
+body.custom-background { background-image: url("https://gencore.bio.nyu.edu/wp-content/uploads/2018/08/stripes-light.png"); background-position: left top; background-size: auto; background-repeat: repeat; background-attachment: fixed; }
+</style>
+<link rel="stylesheet" type="text/css" href="https://caduceuscloud15.com/lib/js/DataTables-1.10.13/datatables.min.css"/>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+
+<body class="post-template-default single single-post postid-700 single-format-standard custom-background group-blog">
+<div id="parallax-bg"></div>
+<div id="page" class="hfeed site">
+		<header id="masthead" class="site-header" role="banner">
+		<div class="header-wrap clearfix">
+			<div class="site-branding">
+                           <h3 class="site-title"><a href="https://gencore.bio.nyu.edu/" title="The Genomics Core Facility @ NYU Center for Genomics and Systems Biology" rel="home">The Genomics Core Facility @ NYU Center for Genomics and Systems Biology</a></h3>
+                        			</div>
+
+							<div class="header-search-icon"></div>
+				<form role="search" method="get" class="search-form" action="https://gencore.bio.nyu.edu/">
+	<label>
+		<span class="screen-reader-text">Search for:</span>
+		<input type="search" class="search-field" placeholder="Search &hellip;" value="" name="s">
+	</label>
+	<input type="submit" class="search-submit" value="Search">
+</form>
+
+			<nav id="site-navigation" class="main-navigation" role="navigation">
+				<h4 class="menu-toggle"></h4>
+				<a class="skip-link screen-reader-text" href="#content">Skip to content</a>
+
+				<div class="menu-home-page-container"><ul id="menu-home-page" class="menu"><li id="menu-item-688" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-688"><a href="/">Home</a>
+<ul class="sub-menu">
+	<li id="menu-item-336" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-336"><a href="https://gencore.bio.nyu.edu/home/publications/">Publications</a></li>
+	<li id="menu-item-335" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-335"><a href="https://gencore.bio.nyu.edu/home/invoicing/">Invoicing</a></li>
+	<li id="menu-item-319" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-319"><a href="https://gencore.bio.nyu.edu/home/personnel/">Personnel</a></li>
+</ul>
+</li>
+<li id="menu-item-321" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-321"><a href="https://gencore.bio.nyu.edu/sequencing/">Sequencing</a>
+<ul class="sub-menu">
+	<li id="menu-item-870" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-870"><a href="https://gencore.bio.nyu.edu/sequencing/">Overview</a></li>
+	<li id="menu-item-325" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-325"><a href="https://gencore.bio.nyu.edu/sequencing/library-documentation/">TuboWeb &#038; Sequencing Queue</a></li>
+	<li id="menu-item-322" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-322"><a href="https://gencore.bio.nyu.edu/sequencing/library-submission-guidelines/">Library Submission Guidelines</a></li>
+	<li id="menu-item-323" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-323"><a href="https://gencore.bio.nyu.edu/sequencing/expected-data-output/">Expected Data Output</a></li>
+	<li id="menu-item-348" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-348"><a href="https://gencore.bio.nyu.edu/sequencing/sanger/">Sanger Sequencing</a></li>
+</ul>
+</li>
+<li id="menu-item-366" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-366"><a href="https://gencore.bio.nyu.edu/shared-equipment/">Shared Equipment</a>
+<ul class="sub-menu">
+	<li id="menu-item-871" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-871"><a href="https://gencore.bio.nyu.edu/shared-equipment/">Overview</a></li>
+	<li id="menu-item-801" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-801"><a href="https://gencore.bio.nyu.edu/shared-equipment/new-york/">New York</a></li>
+	<li id="menu-item-807" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-807"><a href="https://gencore.bio.nyu.edu/shared-equipment/abu-dhabi/">Abu Dhabi</a></li>
+</ul>
+</li>
+<li id="menu-item-347" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-347"><a href="https://gencore.bio.nyu.edu/bioinformatics/">Bioinformatics</a>
+<ul class="sub-menu">
+	<li id="menu-item-872" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-872"><a href="https://gencore.bio.nyu.edu/bioinformatics/">Overview</a></li>
+	<li id="menu-item-646" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-646"><a href="https://gencore.bio.nyu.edu/bioinformatics/hpc-data-analysis-best-practices/">HPC Best Practices</a></li>
+	<li id="menu-item-324" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-324"><a href="https://gencore.bio.nyu.edu/sequencing/data-management-policy/">Data Management &#038; Policy</a></li>
+	<li id="menu-item-1081" class="menu-item menu-item-type-post_type menu-item-object-post menu-item-1081"><a href="https://gencore.bio.nyu.edu/explore-the-new-shared-genome-resource/">Shared Genome Resource</a></li>
+	<li id="menu-item-488" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-488"><a href="https://gencore.bio.nyu.edu/bioinformatics/nyu-hits/">NYU-HiTS</a></li>
+</ul>
+</li>
+</ul></div>			</nav><!-- #site-navigation -->
+		</div><!-- .inner-wrap header-wrap -->
+	</header><!-- #masthead -->
+
+	<div id="content" class="site-content">
+		<div class="inner-wrap">
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+		
+			
+<article id="post-700" class="post-700 post type-post status-publish format-standard has-post-thumbnail hentry category-bioinformatics tag-gatk tag-snpeff tag-variant-calling">
+	<header class="entry-header">
+		<h1 class="entry-title">Variant Calling Pipeline: FastQ to Annotated SNPs in Hours</h1>
+
+		<div class="entry-meta">
+			<span class="posted-on"><a href="https://gencore.bio.nyu.edu/variant-calling-pipeline/" rel="bookmark"><time class="entry-date published" datetime="2016-03-09T16:31:25+00:00">2016-03-09</time><time class="updated" datetime="2018-05-08T12:47:19+00:00">2018-05-08</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://gencore.bio.nyu.edu/author/mk5636/">Mohammed Khalfan</a></span></span>		</div><!-- .entry-meta -->
+	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<div class="social-butterfly">
+<div style="background-color:#632E9B" class="social-butterfly-share-box" >
+<div id="social-butterfly-left">SHARE+</div>
+<div id="social-butterfly-middle" class="social-butterfly-middle" >
+<div id="social-butterfly-tw" class="social-butterfly-icon-box" style="border-left:1px solid #A34CFF">
+				        <a href="https://twitter.com/share" class="twitter-share-button" data-lang="en" data-size="large" data-count="none" data-via="gencorefacility">Tweet</a><br />
+				        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+				</div>
+<div id="social-butterfly-li" class="social-butterfly-icon-box li-top" style="border-left:1px solid #A34CFF">
+				        <script src="//platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script><script type="IN/Share"></script></div>
+</p></div>
+<div id="social-butterfly-right" class="is_open"></div>
+</p></div>
+</div>
+<p>Identifying genomic variants, such as single nucleotide polymorphisms (SNPs) and DNA insertions and deletions (indels), can play an important role in scientific discovery. To this end, a pipeline has been developed to allow researchers at the CGSB to rapidly identify and annotate variants. The pipeline employs the <a href="https://www.broadinstitute.org/gatk/">Genome Analysis Toolkit</a> (GATK) to perform variant calling and is based on the <a href="https://www.broadinstitute.org/gatk/guide/best-practices.php">best practices for variant discovery analysis</a> outlined by the Broad Institute. Once SNPs have been identified, <a href="http://snpeff.sourceforge.net/">SnpEff </a>is utilized to annotate and predict the effects of the variants.</p>
+<h2>Full List of Tools Used in this Pipeline:</h2>
+<ul type="disc">
+<li>GATK</li>
+<li>BWA</li>
+<li>Picard</li>
+<li>Samtools</li>
+<li>Bedtools</li>
+<li>SnpEff</li>
+<li>R (dependency for some GATK and Picard steps)</li>
+</ul>
+<h2>Script Location:</h2>
+<p><code>prince:/scratch/work/cgsb/scripts/variant_calling/pipeline.sh</code></p>
+<p><code><a href="https://github.com/gencorefacility/variant-calling-pipeline">https://github.com/gencorefacility/variant-calling-pipeline</a></code></p>
+<h2>How to use this script:</h2>
+<ol>
+<li>Create a new directory for this project in your home folder on scratch<br />
+<code>cd /scratch/&lt;netID&gt;/</code><br />
+<code>mkdir variant-calling</code><br />
+<code>cd variant-calling</code></li>
+<li>Copy pipeline.sh into your project directory<br />
+<code>cp /scratch/work/cgsb/scripts/variant-calling/pipeline.sh .</code></li>
+<li>The pipeline requires six input values. The values can be hard coded into the script, or provided as command line arguments. They are found at the very top of the script.
+<ol>
+<li>DIR: The directory with your FastQ libraries to be processed. This should be located in /scratch/cgsb/gencore/out/&lt;PI&gt;/</li>
+<li>REF: Reference genome to use. This should be located in the Shared Genome Resource (/scratch/work/cgsb/reference_genomes/). Selecting a reference genome from within the Shared Genome Resource ensures that all index files and reference dictionaries required by BWA, Picard, GATK, etc. are available.</li>
+<li>SNPEFF_DB: The name of the SnpEff database to use. To determine the name of the SnpEff DB to use, issue the following command:<code>java -jar /share/apps/snpeff/4.1g/snpEff.jar databases | grep -i SPECIES_NAME<br />
+</code>From the list of returned results, select the database you wish to use. The value of the first column is the value to input for SNPEFF_DB.Example:<br />
+<code>java -jar /share/apps/snpeff/4.1g/snpEff.jar databases | grep -i thaliana</code></p>
+<p>Output:</p>
+<p><code>athalianaTair10   Arabidopsis_Thaliana    http://downloads.sourceforge.net/...</code></p>
+<p>Then:</p>
+<p><code>SNPEFF_DB='athalianaTair10'</code></p>
+<p><strong>Note:</strong> If your organism is not available in SnpEff, it is possible to create a custom SnpEff Database if a reference fasta and gff file are available.</li>
+<li>PL: Platform. Ex: illumina</li>
+<li>PM: Machine. Ex: nextseq</li>
+<li>EMAIL: Your email address. Used to report PBS job failures</li>
+</ol>
+<p>In the example below, I have hard coded the parameters in the script:</p>
+<p><code></code><code>DIR='/data/cgsb/gencore/out/Gresham/2015-10-23_HK5NHBGXX/lib1-26/'</code><br />
+<code>REF='/scratch/work/cgsb/reference_genomes/Public/Fungi/Saccharomyces_cerevisiae/GCF_000146045.2_R64/GCF_000146045.2_R64_genomic.fna'</code><br />
+<code>SNPEFF_DB='GCF_000146045.2_R64'</code><br />
+<code>PL='illumina'</code><br />
+<code>PM='nextseq'</code><br />
+<code>EMAIL='some1@nyu.edu' # Not a real email address<br />
+</code></li>
+<li>Run the script. If you hard coded the parameters in the script as shown in the example above, no additional parameters need to be provided. Simply run:<br />
+<code>sh pipeline.sh</code></li>
+<li>Optional: Monitor the jobs<br />
+<code>watch -d qstat -u &lt;netID&gt;</code></li>
+</ol>
+<h2>Overview of the pipeline</h2>
+<p><img class="alignnone wp-image-705 size-full" style="border: 1px solid black; padding: 5px;" src="https://dev-gencore.bio.nyu.edu/wp-content/uploads/2016/03/VariantCallingWorkflow-Updated.jpg" alt="Variant Calling Workflow" width="782" height="1084" srcset="https://gencore.bio.nyu.edu/wp-content/uploads/2016/03/VariantCallingWorkflow-Updated.jpg 782w, https://gencore.bio.nyu.edu/wp-content/uploads/2016/03/VariantCallingWorkflow-Updated-216x300.jpg 216w, https://gencore.bio.nyu.edu/wp-content/uploads/2016/03/VariantCallingWorkflow-Updated-768x1065.jpg 768w, https://gencore.bio.nyu.edu/wp-content/uploads/2016/03/VariantCallingWorkflow-Updated-739x1024.jpg 739w" sizes="(max-width: 782px) 100vw, 782px" /></p>
+<div style="border: 1px solid purple; background-color: #eeeeee; padding-top: 20px; padding-right: 20px; padding-left: 20px; margin-bottom: 20px;">
+<h2>Important Notes:</h2>
+<ul type="disc">
+<li>The pipeline assumes no known variants are available for the Base Quality Score Recalibration step and as such bootsraps a set of SNPs and Indels to provide as input at this step. Contact me if a list of high quality known variants is available for your organism as this data can improve the quality of the output</li>
+<li>The current script is designed to work with Paired End data</li>
+<li>Due to HPC queue limits on mercer, the pipeline can run on a maximum of 25 libraries at a time</li>
+<li>If you need to run the pipeline on more than 25 libraries or on Single End reads, or have any other questions, please <a href="mailto:mkhalfan@nyu.edu">contact me</a></li>
+</ul>
+</div>
+<h2>Walk through</h2>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 1</td>
+<td>Alignment &#8211; Map to Reference</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>BWA MEM</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>.fastq files, reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">aligned_reads.sam*</span></p>
+<p><span style="color: #999999;">*Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>
+<p>Need to provide the -M flag to BWA, this tells it to consider split reads as secondary, need this for GATK variant calling/Picard support. Alternate alignment tools: Bowtie2, Novoalign</p>
+<p>Readgroup info is provided with the -R flag. This information is key for downstream GATK functionality. GATK will not work without a read group tag.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>bwa mem -M -R '@RG\tID:sample_1\tLB:sample_1\tPL:ILLUMINA\tPM:HISEQ\tSM:sample_1' ref input_1 input_2 &gt; aligned_reads.sam</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 2</td>
+<td>Sort SAM file by coordinate, convert to BAM</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Picard Tools</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>aligned_reads.sam</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">sorted_reads.bam*</span></p>
+<p><span style="color: #999999;">*Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Command</td>
+<td><span style="color: #333333;"><code>java -jar picard.jar SortSam INPUT=aligned_reads.sam OUTPUT=sorted_reads.bam SORT_ORDER=coordinate</code></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 3</td>
+<td>Collect Alignment &amp; Insert Size Metrics</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Picard Tools, R, Samtools</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>sorted_reads.bam, reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>alignment_metrics.txt,<br />
+insert_metrics.txt,<br />
+insert_size_histogram.pdf,<br />
+depth_out.txt</td>
+</tr>
+<tr>
+<td>Command</td>
+<td>
+<p><code>java -jar picard.jar CollectAlignmentSummaryMetrics R=ref I=sorted_reads.bam O=alignment_metrics.txt</code></p>
+<p><code>java -jar picard.jar CollectInsertSizeMetrics INPUT=sorted_reads.bam OUTPUT=insert_metrics.txt HISTOGRAM_FILE=insert_size_histogram.pdf</code></p>
+<p><code>samtools depth -a sorted_reads.bam &gt; depth_out.txt</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 4</td>
+<td>Mark Duplicates</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Picard Tools</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>sorted_reads.bam</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">dedup_reads.bam*</span></p>
+<p>metrics.txt</p>
+<p><span style="color: #999999;">*Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Command</td>
+<td><span style="color: #333333;"><code>java -jar picard.jar MarkDuplicates INPUT=sorted_reads.bam OUTPUT=dedup_reads.bam METRICS_FILE=metrics.txt</code></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 5</td>
+<td>Build BAM Index</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Picard Tools</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>dedup_reads.bam</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">dedup_reads.bai*</span></p>
+<p><span style="color: #999999;"> *Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code><span style="color: #333333;">java -jar picard.jar BuildBamIndex INPUT=dedup_reads.bam</span></code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 6</td>
+<td>Create Realignment Targets</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>dedup_reads.bam,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>realignment_targets.list</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This is the first step in a two-step process of realigning around indels</td>
+</tr>
+<tr>
+<td>Commad</td>
+<td><span style="color: #333333;"><code>java -jar GenomeAnalysisTK.jar </code></span><span style="color: #333333;"><code>-T RealignerTargetCreator </code></span><span style="color: #333333;"><code>-R ref </code></span><span style="color: #333333;"><code>-I dedup_reads.bam </code></span><span style="color: #333333;"><code>-o realignment_targets.list</code></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 7</td>
+<td>Realign Indels</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>dedup_reads.bam,<br />
+realignment_targets.list,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>realigned_reads.bam</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This step performs the realignment around the indels which were identified in the previous step (the &#8216;realignment targets&#8217;)</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><span style="color: #333333;"><code>java -jar GenomeAnalysisTK.jar </code></span><span style="color: #333333;"><code>-T IndelRealigner </code></span><span style="color: #333333;"><code>-R ref </code></span><span style="color: #333333;"><code>-I dedup_reads.bam </code></span><span style="color: #333333;"><code>-targetIntervals realignment_targets.list </code></span><span style="color: #333333;"><code>-o realigned_reads.bam</code></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 8</td>
+<td>Call Variants</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>realigned_reads.bam,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>raw_variants.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>First round of variant calling. The variants identified in this step will be filtered and provided as input for Base Quality Score Recalibration</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;"><code>GenomeAnalysisTK.jar</code></span> </code><code>-T HaplotypeCaller </code><code>-R ref </code><code>-I realigned_reads.bam </code><code>-o raw_variants.vcf<br />
+</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 9</td>
+<td>Extract SNPs &amp; Indels</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_variants.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>raw_indels.vcf, raw_snps.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This step separates SNPs and Indels so they can be processed and used independently</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <code><span style="color: #333333;"><code>GenomeAnalysisTK.jar</code></span></code> </code><code>-T SelectVariants </code><code>-R ref </code><code>-V raw_variants.vcf </code><code>-selectType SNP </code><code>-o raw_snps.vcf<br />
+</code><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T SelectVariants </code><code>-R ref </code><code>-V raw_variants.vcf </code><code>-selectType INDEL </code><code>-o raw_indels.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 10</td>
+<td>Filter SNPs</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_snps.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>filtered_snps.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>
+<p>The filtering criteria for SNPs are as follows:</p>
+<p>QD &lt; 2.0<br />
+FS &gt; 60.0<br />
+MQ &lt; 40.0<br />
+MQRankSum &lt; -12.5<br />
+ReadPosRankSum &lt; -8.0<br />
+SOR &gt; 4.0</p>
+<p>Note: SNPs which are &#8216;filtered out&#8217; at this step will remain in the filtered_snps.vcf file, however they will be marked as &#8216;basic_snp_filter&#8217;, while SNPs which passed the filter will be marked as &#8216;PASS&#8217;</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <code><code><span style="color: #333333;"><code>GenomeAnalysisTK.jar</code></span></code></code> </code><code>-T VariantFiltration </code><code>-R ref </code><code>-V raw_snps.vcf </code><code>--filterExpression 'QD &lt; 2.0 || FS &gt; 60.0 || MQ &lt; 40.0 || MQRankSum &lt; -12.5 || ReadPosRankSum &lt; -8.0 || SOR &gt; 4.0' </code><code>--filterName "basic_snp_filter" </code><code>-o filtered_snps.vcf<br />
+</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 11</td>
+<td>Filter Indels</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_indels.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>filtered_indels.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>
+<p>The filtering criteria for SNPs are as follows:</p>
+<p>QD &lt; 2.0<br />
+FS &gt; 200.0<br />
+ReadPosRankSum &lt; -20.0<br />
+SOR &gt; 10.0</p>
+<p>Note: Indelss which are &#8216;filtered out&#8217; at this step will remain in the filtered_indels.vcf file, however they will be marked as &#8216;basic_indel_filter&#8217;, while Indels which passed the filter will be marked as &#8216;PASS&#8217;</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T VariantFiltration </code><code>-R ref </code><code>-V raw_indels.vcf </code><code>--filterExpression 'QD &lt; 2.0 || FS &gt; 200.0 || ReadPosRankSum &lt; -20.0 || SOR &gt; 10.0' </code><code>--filterName "basic_indel_filter" </code><code>-o filtered_indels.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 12</td>
+<td>Base Quality Score Recalibration (BQSR) #1</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>realigned_reads.bam,<br />
+filtered_snps.vcf,<br />
+filtered_indels.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">recal_data.table*</span></p>
+<p><span style="color: #999999;">*Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>BQSR is performed twice. The second pass is optional, but is required to produce a recalibration report.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar </span></code><code>-T BaseRecalibrator </code><code>-R ref </code><code>-I realigned_reads.bam </code><code>-knownSites filtered_snps.vcf </code><code>-knownSites filtered_indels.vcf </code><code></code><code>-o recal_data.table<br />
+</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 13</td>
+<td>Base Quality Score Recalibration (BQSR) #2</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>recal_data.table,<br />
+realigned_reads.bam,<br />
+filtered_snps.vcf,<br />
+filtered_indels.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>
+<p><span style="color: #999999;">post_recal_data.table</span></p>
+<p><span style="color: #999999;">*Intermediary file, removed from final output</span></td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>The second time BQSR is run, it takes the output from the first run (recal_data.table) as input</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar </span></code><code>-T BaseRecalibrator </code><code>-R ref </code><code>-I realigned_reads.bam </code><code>-knownSites filtered_snps.vcf </code><code>-knownSites filtered_indels.vcf -BQSR recal_data.table </code><code></code><code>-o post_recal_data.table</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 14</td>
+<td>Analyze Covariates</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>recal_data.table,<br />
+post_recal_data.table,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>recalibration_plots.pdf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This step produces a recalibration report based on the output from the two BQSR runs</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <code><span style="color: #333333;">GenomeAnalysisTK.jar</span></code> </code><code>-T AnalyzeCovariates </code><code>-R ref </code><code>-before recal_data.table </code><code>-after post_recal_data.table </code><code>-plots recalibration_plots.pdf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 15</td>
+<td>Apply BQSR</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>recal_data.table,<br />
+realigned_reads.bam,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>recal_reads.bam</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This step applies the recalibration computed in the first BQSR step to the bam file.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <code><code><span style="color: #333333;">GenomeAnalysisTK.jar</span></code></code> </code><code>-T PrintReads </code><code>-R ref </code><code>-I realigned_reads.bam </code><code>-BQSR recal_data.table </code><code>-o recal_reads.bam</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 16</td>
+<td>Call Variants</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>recal_reads.bam,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>raw_variants_recal.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Second round of variant calling performed on recalibrated bam</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T HaplotypeCaller </code><code>-R ref </code><code>-I recal_reads.bam </code><code>-o raw_variants_recal.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 17</td>
+<td>Extract SNPs &amp; Indels</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_variants_recal.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>raw_indels_recal.vcf, raw_snps_recal.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>This step separates SNPs and Indels so they can be processed and analyzed independently</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T SelectVariants </code><code>-R ref </code><code>-V raw_variants_recal.vcf </code><code>-selectType SNP </code><code>-o raw_snps_recal.vcf<br />
+</code><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T SelectVariants </code><code>-R ref </code><code>-V raw_variants_recal.vcf </code><code>-selectType INDEL </code><code>-o raw_indels_recal.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 18</td>
+<td>Filter SNPs</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_snps_recal.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>filtered_snps_final.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>
+<p>The filtering criteria for SNPs are as follows:</p>
+<p>QD &lt; 2.0<br />
+FS &gt; 60.0<br />
+MQ &lt; 40.0<br />
+MQRankSum &lt; -12.5<br />
+ReadPosRankSum &lt; -8.0<br />
+SOR &gt; 4.0</p>
+<p>Note: SNPs which are &#8216;filtered out&#8217; at this step will remain in the filtered_snps_final.vcf file, however they will be marked as &#8216;basic_snp_filter&#8217;, while SNPs which passed the filter will be marked as &#8216;PASS&#8217;</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T VariantFiltration </code><code>-R ref </code><code>-V raw_snps_recal.vcf </code><code>--filterExpression 'QD &lt; 2.0 || FS &gt; 60.0 || MQ &lt; 40.0 || MQRankSum &lt; -12.5 || ReadPosRankSum &lt; -8.0 || SOR &gt; 4.0' </code><code>--filterName "basic_snp_filter" </code><code>-o filtered_snps_final.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 19</td>
+<td>Filter Indels</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>GATK</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>raw_indels_recal.vcf,<br />
+reference genome</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>filtered_indels_final.vcf</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>
+<p>The filtering criteria for SNPs are as follows:</p>
+<p>QD &lt; 2.0<br />
+FS &gt; 200.0<br />
+ReadPosRankSum &lt; -20.0<br />
+SOR &gt; 10.0</p>
+<p>Note: Indelss which are &#8216;filtered out&#8217; at this step will remain in the filtered_indels_recal.vcf file, however they will be marked as &#8216;basic_indel_filter&#8217;, while Indels which passed the filter will be marked as &#8216;PASS&#8217;</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar <span style="color: #333333;">GenomeAnalysisTK.jar</span> </code><code>-T VariantFiltration </code><code>-R ref </code><code>-V raw_indels_recal.vcf </code><code>--filterExpression 'QD &lt; 2.0 || FS &gt; 200.0 || ReadPosRankSum &lt; -20.0 || SOR &gt; 10.0' </code><code>--filterName "basic_indel_filter" </code><code>-o filtered_indels_recal.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 20</td>
+<td>Annotate SNPs and Predict Effects</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>SnpEff</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>filtered_snps_final.vcf</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>filtered_snps_final.ann.vcf,<br />
+snpeff_summary.html,<br />
+snpEff_genes.txt</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>java -jar snpEff.jar </code><code>-v snpeff_db </code><code>filtered_snps_final.vcf &gt; filtered_snps_final.ann.vcf</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 21</td>
+<td>Compute Coverage Statistics</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>Bedtools</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>recal_reads.bam</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>genomecov.bedgraph</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Load the genomecov.bedgraph file into IGV to view a coverage map at the entire genome or chromosome level</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><code>bedtools genomecov -bga -ibam recal_reads.bam &gt; genomecov.bedgraph</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>Step 22</td>
+<td>Compile Statistics</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>parse_metrics.sh (in house)</td>
+</tr>
+<tr>
+<td>Input</td>
+<td>alignment_metrics.txt,<br />
+insert_metrics.txt,<br />
+raw_snps.vcf,<br />
+filtered_snps.vcf,<br />
+raw_snps_recal.vcf,<br />
+filtered_snps_final.vcf,<br />
+depth_out.txt</td>
+</tr>
+<tr>
+<td>Output</td>
+<td>report.csv</td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>A single report file is generated with summary statistics for all libraries processed containing the following pieces of information:</p>
+<ul type="disc">
+<li># of Reads</li>
+<li># of Aligned Reads</li>
+<li>% Aligned</li>
+<li># Aligned Bases</li>
+<li>Read Length</li>
+<li>% Paired</li>
+<li>Mean Insert Size</li>
+<li># SNPs, # Filtered SNPs</li>
+<li># SNPs after BQSR, # Filtered SNPs after BQSR</li>
+<li>Average Coverage</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>This pipeline was presented at the <a href="https://dev-gencore.bio.nyu.edu/bioinformatics/nyu-hits/">NYU-HiTS</a> seminar on March 03, 2016. <a href="https://docs.google.com/presentation/d/1g3x6xg0_27wtEVb3rpXBUw2UEnTwCTsnfwjcv2bHm0s/edit?usp=sharing">Slides available here</a>.</p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-meta">
+								<span class="cat-links">
+				<a href="https://gencore.bio.nyu.edu/category/bioinformatics/" rel="category tag">Bioinformatics</a>			</span>
+			
+						<span class="tags-links">
+				<a href="https://gencore.bio.nyu.edu/tag/gatk/" rel="tag">gatk</a>, <a href="https://gencore.bio.nyu.edu/tag/snpeff/" rel="tag">snpeff</a>, <a href="https://gencore.bio.nyu.edu/tag/variant-calling/" rel="tag">variant calling</a>			</span>
+					
+				<span class="comments-link"><a href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comments">20 Comments</a></span>
+		
+			</footer><!-- .entry-meta -->
+</article><!-- #post-## -->
+
+				<nav class="navigation post-navigation" role="navigation">
+		<h3 class="screen-reader-text">Post navigation</h3>
+		<div class="nav-links">
+
+			<div class="nav-previous"><a href="https://gencore.bio.nyu.edu/start-the-new-year-off-right-how-to-choose-the-right-sequencer/" rel="prev"><span class="meta-nav">&larr;</span> Start the New Year Off Right: How to Choose the Right Sequencer</a></div>
+			<div class="nav-next"><a href="https://gencore.bio.nyu.edu/node-to-joy/" rel="next">Node to Joy: Maximize Your Performance on the HPC <span class="meta-nav">&rarr;</span></a></div>
+
+		</div><!-- .nav-links -->
+	</nav><!-- .navigation -->
+	
+			
+<div id="comments" class="comments-area">
+
+	
+			<h3 class="comments-title">
+			20 thoughts on &ldquo;<span>Variant Calling Pipeline: FastQ to Annotated SNPs in Hours</span>&rdquo;		</h3>
+
+		
+		<ul class="comment-list">
+				<li class="comment even thread-even depth-1" id="li-comment-391">
+		<article id="comment-391" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/7d42ab85cdbfa0a1fe513abe695a6a22?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/7d42ab85cdbfa0a1fe513abe695a6a22?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Minju Kim</div><div class="comment-date-time">2016-11-29 at 2:12 pm</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-391">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi,<br />
+I am Minju, a master student of Dept. of Biology, performing computational research with HTS data.</p>
+<p>my question is that where could I get the file, GenomeAnalysisTK.jar. because the Broad Institute, the developer, only provide GenomeAnalysisTK.tar which means I can&#8217;t execute the commands(specifically I am stuck in the Step 8: raw variant calling) </p>
+<p>&#8220;Error: Unable to access jarfile GenomeAnalysisTK.jar&#8221;<br />
+error message from the mercer.</p>
+<p>I want to ask you some solutions either for A or B.</p>
+<p>A. how can I modify the command given in Step 8, if I want to call the variants with GATK.tar<br />
+B. where should I get GATK.jar</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=391#respond' onclick='return addComment.moveForm( "comment-391", "391", "respond", "700" )' aria-label='Reply to Minju Kim'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor odd alt depth-2" id="li-comment-392">
+		<article id="comment-392" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2016-11-29 at 4:07 pm</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-392">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Minju,</p>
+<p>On mercer, you need to call the full path to the GATK jar file (after loading the GATK module). Your command should look like this:</p>
+<p>java -jar /share/apps/gatk/3.3-0/GenomeAnalysisTK.jar -T HaplotypeCaller -R ref -I realigned_reads.bam -o raw_variants.vcf</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=392#respond' onclick='return addComment.moveForm( "comment-392", "392", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-780">
+		<article id="comment-780" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/d71cd3ad26ac8f2aeff705002d0eb177?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/d71cd3ad26ac8f2aeff705002d0eb177?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Jarod</div><div class="comment-date-time">2016-12-29 at 4:09 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-780">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hello,<br />
+I would like to know if it is possible to send me bash linux file: parse_metrics.sh and pipeline.sh ? I don&#8217;t manage to access mercer server. Thanks a lot for this great article.<br />
+Regards,<br />
+Jarod.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=780#respond' onclick='return addComment.moveForm( "comment-780", "780", "respond", "700" )' aria-label='Reply to Jarod'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1" id="li-comment-916">
+		<article id="comment-916" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/b3089f9746c3e7d58e156ad0062f5888?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/b3089f9746c3e7d58e156ad0062f5888?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Wilfrid Carre</div><div class="comment-date-time">2017-01-12 at 6:21 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-916">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi,</p>
+<p>I use more or leass the same tools.<br />
+Several comments on your pipeline:<br />
+Where do you put the read groups in the BAM that are necessary for GATK ?<br />
+The Base Quality Score Recalibration from GATK works with dbSNP and not with the variant you just call for the -knownSites option. Read the manual from GATK : <a href="https://software.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php" rel="nofollow">https://software.broadinstitute.org/gatk/gatkdocs/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php</a><br />
+The point of the recalibration is to use known genuine SNP in order to improve your calling.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=916#respond' onclick='return addComment.moveForm( "comment-916", "916", "respond", "700" )' aria-label='Reply to Wilfrid Carre'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor even depth-2" id="li-comment-917">
+		<article id="comment-917" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2017-01-12 at 7:22 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-917">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Wilfrid,</p>
+<p>Thanks for your feedback. Answers to your questions:</p>
+<p>1) The read groups are provided during the alignment step. I&#8217;ve updated the post to include this (step 1)</p>
+<p>2) You are correct, and where possible you should use a &#8216;gold standard&#8217; set of variants for the BQSR step. Unfortunately, this data is not available for all organisms, and in these cases, it is necessary to do what is known as &#8216;bootstrapping&#8217; to produce a set of variants to use at this step, which is what I have demonstrated above. See: <a href="http://gatkforums.broadinstitute.org/wdl/discussion/1247/what-should-i-use-as-known-variants-sites-for-running-tool-x" rel="nofollow">http://gatkforums.broadinstitute.org/wdl/discussion/1247/what-should-i-use-as-known-variants-sites-for-running-tool-x</a></p>
+<p>See &#8220;Important Notes&#8221; above: The pipeline assumes no known variants are available for the Base Quality Score Recalibration step and as such bootsraps a set of SNPs and Indels to provide as input at this step.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=917#respond' onclick='return addComment.moveForm( "comment-917", "917", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-935">
+		<article id="comment-935" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/8f2756b2fab4370893bbba25547ce81c?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/8f2756b2fab4370893bbba25547ce81c?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Kai Feng</div><div class="comment-date-time">2017-01-14 at 10:54 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-935">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi there, </p>
+<p>your pipeline is quite straightforward and promising, I figured out this was done on only one sample, can you provide a detailed instruction on multiple samples?</p>
+<p>Thanks,</p>
+<p>Kai</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=935#respond' onclick='return addComment.moveForm( "comment-935", "935", "respond", "700" )' aria-label='Reply to Kai Feng'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1119">
+		<article id="comment-1119" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/63c88b4f2eff69368b71c447266f4886?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/63c88b4f2eff69368b71c447266f4886?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Malisa</div><div class="comment-date-time">2017-02-19 at 11:43 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1119">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi,</p>
+<p>I am a PHD student and trying to run the codes step by step. When I followed the steps and ran Step 10, there were warnings said &#8220;undefined variable MQRankSum&#8221;. How can I solve this problem? Thanks for your time.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1119#respond' onclick='return addComment.moveForm( "comment-1119", "1119", "respond", "700" )' aria-label='Reply to Malisa'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor odd alt depth-2" id="li-comment-1132">
+		<article id="comment-1132" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2017-02-22 at 11:41 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1132">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Malisa,</p>
+<p>Is this happening only for certain lines? If so, I believe this means that there is no MQRankSum annotation for that particular site. In this case, you can ignore these warnings.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1132#respond' onclick='return addComment.moveForm( "comment-1132", "1132", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1127">
+		<article id="comment-1127" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/aafad5997edd1f798e9b4ba64c1a37ec?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/aafad5997edd1f798e9b4ba64c1a37ec?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">David willmore</div><div class="comment-date-time">2017-02-21 at 10:04 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1127">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Mohammed,</p>
+<p>The pipeline you elaborated is good, please keep up the good work. It will help many. You have explained it well and kept it simple and lucid.<br />
+well, i was wondering, from where &#8220;depth_out.txt&#8221; you are sourcing out?<br />
+just i am curious to know&#8230;</p>
+<p>Keep up the good work !!!</p>
+<p>Cheers,<br />
+David</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1127#respond' onclick='return addComment.moveForm( "comment-1127", "1127", "respond", "700" )' aria-label='Reply to David willmore'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor odd alt depth-2" id="li-comment-1131">
+		<article id="comment-1131" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2017-02-22 at 11:32 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1131">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi David,</p>
+<p>Thanks for the kind words! the &#8216;depth_out.txt&#8217; file is created using the samtools depth utility, see Step 3 above (Collect Alignment &#038; Insert Size Metrics).</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1131#respond' onclick='return addComment.moveForm( "comment-1131", "1131", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-1139">
+		<article id="comment-1139" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">irene</div><div class="comment-date-time">2017-02-23 at 11:20 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1139">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi David really nice work!<br />
+Just a quick question. The GATK website says that you actually don&#8217;t need to run IndelRealigner if you are going to use Haplotypecaller. But this is in your steps. Would you recommend it anyway?</p>
+<p>thanks<br />
+ib</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1139#respond' onclick='return addComment.moveForm( "comment-1139", "1139", "respond", "700" )' aria-label='Reply to irene'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor odd alt depth-2" id="li-comment-1634">
+		<article id="comment-1634" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2017-03-12 at 2:56 pm</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1634">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Irene, thanks for the feedback! At the time of writing this post, IndelRealigner was a recommended step in the GATK best practices. With the latest version of Haplotypecaller, it seems this step is no longer required, so I think you are safe to skip it.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1634#respond' onclick='return addComment.moveForm( "comment-1634", "1634", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-1140">
+		<article id="comment-1140" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">irene</div><div class="comment-date-time">2017-02-23 at 11:21 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1140">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Apologies misread your name Mohammed 🙂</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1140#respond' onclick='return addComment.moveForm( "comment-1140", "1140", "respond", "700" )' aria-label='Reply to irene'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-even depth-1" id="li-comment-1718">
+		<article id="comment-1718" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/97c510d76df1c98b02c57dd1495ecfd9?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/97c510d76df1c98b02c57dd1495ecfd9?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Deepa Krishna</div><div class="comment-date-time">2017-05-25 at 10:20 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-1718">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi,</p>
+<p>I am a Masters student, I was looking for something similar to workflow presented here and am glad I came across your work. </p>
+<p>You mentioned about Compile Statistics in step 22, a Tool, parse_metrics.sh (in-house). Am interest in knowing how it works and I would like to use it to produce the report.</p>
+<p>Thank you</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=1718#respond' onclick='return addComment.moveForm( "comment-1718", "1718", "respond", "700" )' aria-label='Reply to Deepa Krishna'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment even thread-odd thread-alt depth-1" id="li-comment-2151">
+		<article id="comment-2151" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/7c70c6dfacbd6810d04a944d63c9288f?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/7c70c6dfacbd6810d04a944d63c9288f?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Tom</div><div class="comment-date-time">2017-09-22 at 11:25 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-2151">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi<br />
+I&#8217;m wondering if an extra &#8220;SelectVariants&#8221; step is necessary to select only SNP with &#8220;PASS&#8221; tag after step 10 before used as knownsites in Step12. I&#8217;ve seen an example doing SelectVariants with -select &#8216;vc.isNotFiltered()&#8217;. Does BaseRecalibrator use SNP with &#8216;PASS&#8221; tag only in filtered_snps.vcf? I appreciate your insights.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=2151#respond' onclick='return addComment.moveForm( "comment-2151", "2151", "respond", "700" )' aria-label='Reply to Tom'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	<ul class="children">
+	<li class="comment byuser comment-author-mk5636 bypostauthor odd alt depth-2" id="li-comment-2204">
+		<article id="comment-2204" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/42276c6332fdb9e7f0d107a05081704b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Mohammed Khalfan<span>Post author</span></div><div class="comment-date-time">2017-09-28 at 3:29 pm</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-2204">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Tom,</p>
+<p>This is not necessary. BQSR will only consider SNPs with &#8220;PASS&#8221; when doing recalibration, so you can give it filtered_snps.vcf directly.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=2204#respond' onclick='return addComment.moveForm( "comment-2204", "2204", "respond", "700" )' aria-label='Reply to Mohammed Khalfan'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+</ul><!-- .children -->
+</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-2331">
+		<article id="comment-2331" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/670ff71ede9fba0d56f9a0c687d3fa58?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/670ff71ede9fba0d56f9a0c687d3fa58?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">nord</div><div class="comment-date-time">2017-10-13 at 3:07 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-2331">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>your pipeline is good. Can you recommend your paper using this pipeline to analyse  to me? Thanks very much.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=2331#respond' onclick='return addComment.moveForm( "comment-2331", "2331", "respond", "700" )' aria-label='Reply to nord'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-2495">
+		<article id="comment-2495" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/184c7dd9d5a5c0391939c590b0d1bd5b?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">irene</div><div class="comment-date-time">2017-11-19 at 9:15 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-2495">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Mohammed,<br />
+can you run step 20 if you have done steps 16-19 in g mode?<br />
+if yes, can you please share the command?<br />
+thanks,<br />
+ib</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=2495#respond' onclick='return addComment.moveForm( "comment-2495", "2495", "respond", "700" )' aria-label='Reply to irene'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-2641">
+		<article id="comment-2641" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/8fd36be63ceaea66c3a5d97b2743715d?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/8fd36be63ceaea66c3a5d97b2743715d?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">D. Bautista PhD</div><div class="comment-date-time">2018-01-14 at 11:39 pm</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-2641">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Your pipeline is quite thorough. I&#8217;m wondering if this is available to non NYU users.</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=2641#respond' onclick='return addComment.moveForm( "comment-2641", "2641", "respond", "700" )' aria-label='Reply to D. Bautista PhD'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-3400">
+		<article id="comment-3400" class="comment">
+			<header class="comment-meta comment-author vcard">
+				<img alt='' src='https://secure.gravatar.com/avatar/1b62a0215b1cc9b38312c3870bdb6535?s=74&#038;d=mm&#038;r=g' srcset='https://secure.gravatar.com/avatar/1b62a0215b1cc9b38312c3870bdb6535?s=148&#038;d=mm&#038;r=g 2x' class='avatar avatar-74 photo' height='74' width='74' /><div class="comment-author-link">Thippesh Sannasiddappa</div><div class="comment-date-time">2018-06-20 at 7:14 am</div><a class="comment-permalink" href="https://gencore.bio.nyu.edu/variant-calling-pipeline/#comment-3400">Permalink</a>			</header><!-- .comment-meta -->
+
+			
+			<section class="comment-content comment">
+				<p>Hi Mohammed, </p>
+<p>Thanks for posting nice and detailed analysis pipeline for variant calling. I am doing bacterial genome SNP/indel calling. I have few questions to ask;<br />
+1. Which versions of GATK, SnpEff, Samtools, Bedtools were used in your pipeline?<br />
+2. What parameters you suggest for filtering SNPs/Indels for bacterial genomes?<br />
+3. What these parameters mean: QD  200.0, ReadPosRankSum  10.0? Are there any cut off standards for calling SNPs/Indels for bacterial genomes?</p>
+				<a rel='nofollow' class='comment-reply-link' href='https://gencore.bio.nyu.edu/variant-calling-pipeline/?replytocom=3400#respond' onclick='return addComment.moveForm( "comment-3400", "3400", "respond", "700" )' aria-label='Reply to Thippesh Sannasiddappa'>Reply</a>			</section><!-- .comment-content -->
+
+		</article><!-- #comment-## -->
+	</li><!-- #comment-## -->
+
+		</ul><!-- .comment-list -->
+
+		
+	
+	
+		<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="/variant-calling-pipeline/#respond" style="display:none;">Cancel reply</a></small></h3>			<form action="https://gencore.bio.nyu.edu/wp-comments-post.php" method="post" id="commentform" class="comment-form" novalidate>
+				<p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="email" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="url" value="" size="30" maxlength="200" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment" /> <input type='hidden' name='comment_post_ID' value='700' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="8acb56e046" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="30"/></p>			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+		
+		</main><!-- #main -->
+	</div><!-- #primary -->
+
+	<div id="secondary" class="widget-area" role="complementary">
+				<aside id="media_image-3" class="widget widget_media_image"><a href="https://gencore.bio.nyu.edu"><img width="300" height="298" src="https://gencore.bio.nyu.edu/wp-content/uploads/2018/05/Logo_Color_RegBlack-300x298.png" class="image wp-image-1155  attachment-medium size-medium" alt="" style="max-width: 100%; height: auto;" srcset="https://gencore.bio.nyu.edu/wp-content/uploads/2018/05/Logo_Color_RegBlack-300x298.png 300w, https://gencore.bio.nyu.edu/wp-content/uploads/2018/05/Logo_Color_RegBlack-e1533090443182.png 150w" sizes="(max-width: 300px) 100vw, 300px" /></a></aside><aside id="text-5" class="widget widget_text">			<div class="textwidget"><p><a href="https://learn.gencore.bio.nyu.edu/#banner"><img class="alignnone size-full wp-image-1328" src="https://gencore.bio.nyu.edu/wp-content/uploads/2019/04/learn-genomics.png" alt="" width="300" height="300" style="border:2px solid grey;padding:5px"/></a></p>
+</div>
+		</aside><aside id="s2_form_widget-2" class="widget s2_form_widget"><h3 class="widget-title">Subscribe</h3><div class="search"><form name="s2formwidget" method="post"><input type="hidden" name="ip" value="150.244.86.134" /><span style="display:none !important"><label for="firstname">Leave This Blank:</label><input type="text" id="firstname" name="firstname" /><label for="lastname">Leave This Blank Too:</label><input type="text" id="lastname" name="lastname" /><label for="uri">Do Not Change This:</label><input type="text" id="uri" name="uri" value="http://" /></span><p><label for="s2email">Your email:</label><br /><input type="email" name="email" id="s2email" value="Enter email address..." size="20" onfocus="if (this.value === 'Enter email address...') {this.value = '';}" onblur="if (this.value === '') {this.value = 'Enter email address...';}" /></p><p><input type="submit" name="subscribe" value="Subscribe" />&nbsp;<input type="submit" name="unsubscribe" value="Unsubscribe" /></p></form>
+</div></aside><aside id="text-4" class="widget widget_text"><h3 class="widget-title">Useful Links</h3>			<div class="textwidget"><a href="https://tuboweb.bio.nyu.edu/">TuboWeb</a><br />
+<a href="http://labgear.bio.nyu.edu/">LabGear</a><br />
+<a href="https://gencore.youcanbook.me/">Training Sign Up</a><br />
+<a href="https://forms.bio.nyu.edu/2-2/computational_needs/">Biology Computational Request Form</a></div>
+		</aside><aside id="text-2" class="widget widget_text"><h3 class="widget-title">Follow Us</h3>			<div class="textwidget"><a class="twitter-timeline" data-dnt="true" href="https://twitter.com/GenCoreFacility" data-widget-id="601113260394487808">Tweets by @GenCoreFacility</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></div>
+		</aside><aside id="text-3" class="widget widget_text"><h3 class="widget-title">Locations</h3>			<div class="textwidget"><p><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3023.4574823229264!2d-73.994496!3d40.729957999999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2599a791389b3%3A0xca713dfb4c76ebdb!2s12+Waverly+Pl%2C+New+York%2C+NY+10003!5e0!3m2!1sen!2sus!4v1443997373558" width="90%" frameborder="0" style="border:0" allowfullscreen></iframe></p><p>
+
+<p><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d11862.188045974111!2d54.43249502088117!3d24.52052088952622!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0000000000000000%3A0x14e8727ec5ee2be1!2sNew+York+University+Abu+Dhabi!5e0!3m2!1sen!2sus!4v1461710842580" width="90%" frameborder="0" style="border:0" allowfullscreen></iframe></p></div>
+		</aside>	</div><!-- #secondary -->
+
+		</div><!-- .inner-wrap -->
+	</div><!-- #content -->
+
+	<footer id="colophon" class="site-footer" role="contentinfo">
+		<div class="site-info">
+						Proudly  powered by 			<a href="http://wordpress.org/" rel="generator">WordPress</a>
+			
+		</div><!-- .site-info -->
+	</footer><!-- #colophon -->
+   <a href="#masthead" id="scroll-up"><span class="genericon genericon-collapse"></span></a>
+</div><!-- #page -->
+
+<script type='text/javascript'>
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"https:\/\/gencore.bio.nyu.edu\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.1.3'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/core.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/widget.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/mouse.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/resizable.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/draggable.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/button.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/position.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/jquery/ui/dialog.min.js?ver=1.11.4'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/themes/radiate/js/navigation.js?ver=20120206'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/themes/radiate/js/skip-link-focus-fix.js?ver=20130115'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var radiateScriptParam = {"radiate_image_link":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/themes/radiate/js/custom.js?ver=889659ad1983a80b923e359fd522f913'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/comment-reply.min.js?ver=889659ad1983a80b923e359fd522f913'></script>
+<script type='text/javascript' src='https://gencore.bio.nyu.edu/wp-includes/js/wp-embed.min.js?ver=889659ad1983a80b923e359fd522f913'></script>
+<script async="async" type='text/javascript' src='https://gencore.bio.nyu.edu/wp-content/plugins/akismet/_inc/form.js?ver=4.1.2'></script>
+<script type="text/javascript" src="https://caduceuscloud15.com/lib/js/DataTables-1.10.13/datatables.min.js"></script>
+<script src="/sgr-tables.js" type="text/javascript"></script>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+  
+    jQuery("#ad").hide();
+    jQuery("#location-ny").addClass("active");
+  
+    jQuery('#table1').on( 'click', 'tr', function (e) {
+      	var new_path = '/genomics/genomes/Public/'
+   		jQuery(this).find('td').each (function() {
+        	var v = jQuery(this).text()
+            new_path = new_path + v + '/'
+		});
+        
+        jQuery('#dynamic-location').text(new_path);
+        jQuery('.dynamic-path-transform').addClass('dynamic-path-transform-active');
+      setTimeout(function(){jQuery('.dynamic-path-transform').removeClass('dynamic-path-transform-active')}, 600);
+	});
+  
+
+  
+});
+jQuery("#location-ny").click(function() {
+  if(jQuery("#ad").is(":visible")){
+    jQuery("#location-ad").removeClass("active");
+    jQuery("#location-ny").addClass("active");
+    jQuery("#ad").hide();
+    jQuery("#ny").show();
+  }
+});
+jQuery("#location-ad").click(function() {
+  if(jQuery("#ny").is(":visible")){
+    jQuery("#location-ny").removeClass("active");
+    jQuery("#location-ad").addClass("active");
+    jQuery("#ny").hide();
+    jQuery("#ad").show();
+  }
+});
+
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-84223348-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+</body>
+</html>
