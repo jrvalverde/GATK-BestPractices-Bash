@@ -34,21 +34,21 @@ of GATK, and if it fails to run, you have two options
 
 ### Fixing problems
  
-     * __preferably__: identify the program where the script fails, check current GATK
+* __preferably__: identify the program where the script fails, check current GATK
      documentation, pray it is up to date, and modify the script until it works (note
      that in some instances the GATK documentation may not be up to date, in our
      experience, when this happens, running the program with --help *may* give you
      updated information --though not always)
      
-     * if you are not in a hurry: wait to see if we get a new job to process and 
+* if you are not in a hurry: wait to see if we get a new job to process and 
      when we update our GATK and our version of the scripts, then grab the updated one
      (this is not recommended as it mat take some time for us to get new assignments)
      
-     * _yes, I know, we said two, but_... you can also contact us, we cannot promise
+* _yes, I know, we said two, but_... you can also contact us, we cannot promise
      much: we are usually working on several projects and may not have spare time, 
      but if we can, we'll try to fix them
      
-     * _a potentiall better option_ is ask us to collaborate with you on the analysis of
+ * _a potentially better option_ is ask us to collaborate with you on the analysis of
      your data: this would provide us with an enticement and a justification to
      continue working on this.
 
