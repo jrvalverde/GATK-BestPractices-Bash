@@ -16,12 +16,13 @@ For the GATK BP workflows, we have based the scripts on the latest available ver
 published at the GATK web site. These workflows suffer from a number of "features": they 
 make use of a mixture of various versions of GATK and, within them, of various sub-versions.
  
-The main problem with GATK workflows is that, at face value, you need to have installed at 
+The main issue with GATK workflows is that, at face value, you need to have installed at 
 least the corresponding versions (3 and 4) of GATK. Not so evident, even within the same 
-version, the command line also has changes from one subversion to another (e.g. calling the
+version, the command line also has changes from one sub-version to another (e.g. calling the
 same program may be different from one release of GATK4 to the next, some options may
 disappear or change name, etc..). GATK is a software in constant flux and that shows up.
-So, you should also have all the different sub-versions as well.
+So, you should also have all the different sub-versions as well, and the same they do,
+which are not documented in the workflows (you have to find out).
  
 We have made our scripts to work with the latest versions of GATK available at key
 points: GATK4-0.12.0 initially, and currently GATK4-1.2.0. This implies that, to run
