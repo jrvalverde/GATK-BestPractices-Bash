@@ -2,6 +2,7 @@
 # Bash scripts implementing GATK Best Practices Workflows
 
 These scripts have been developed by José R. Valverde and Lorena Magraner at CNB-CSIC
+
 www.cnb.csic.es
 
 These scripts are based on publicly available works:
@@ -9,6 +10,18 @@ These scripts are based on publicly available works:
 * The gatk*.sh scripts are based on the published workflows available from the GATK team
 
 * The scripts in NYU are based on published scripts distributed by NYU
+
+## the deal
+
+We'd like to properly publish this work, or at least get acknowledged for it. If you decide
+to use these scripts, please do cite them in any publication, either referring to this
+GitHub site, or -shuld we succeed in publishing them- the corresponding publication, which
+we'll mention here. But, at the very least, we beg you to cite our work:
+
+Valverde, J.R., Magraner, L. (2019) Bash scripts implementing GATK Best Practices 
+Workflows. GitHub. https://github.com/jrvalverde/GATK-BP-bash
+
+And, of course, we want to thank you in advance for your kindness.
 
 ## GATK-Best-Practices based workflows
  
