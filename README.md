@@ -11,21 +11,21 @@ These scripts are based on publicly available works:
 
 * The scripts in NYU are based on published scripts distributed by NYU
 
-## the deal
+## The deal
 
 We'd like to properly publish this work, or at least get acknowledged for it. If you decide
 to use these scripts, please do cite them in any publication, either referring to this
-GitHub site, or -shuld we succeed in publishing them- the corresponding publication, which
-we'll mention here. But, at the very least, we beg you to cite our work:
+GitHub site, or -should we succeed in publishing them- the corresponding publication, which
+we'll eventually mention here. But, at the very least, we beg you to cite our work:
 
 Valverde, J.R., Magraner, L. (2019) Bash scripts implementing GATK Best Practices 
 Workflows. GitHub. https://github.com/jrvalverde/GATK-BP-bash
 
 And, of course, we want to thank you in advance for your kindness.
 
-## GATK-Best-Practices based workflows
+## Workflows based on the GATK-team Best-Practices
  
-For the GATK BP workflows, we have based the scripts on the latest available versions
+For the GATK BP workflows, we base our scripts on the latest available versions
 published at the GATK web site. These workflows suffer from a number of "features": they 
 make use of a mixture of various versions of GATK and, within them, of various sub-versions.
  
@@ -122,6 +122,16 @@ progress__ of the calculation (each step will use a longer output file name) and
 control it: if you want to __repeat everything after a given step__, you can use 
 __rm file.step1.step2..stepn.*__ and all files generated after stepn will be removed. Now,
 simply re-run the script and those missing steps will be completed.
+
+We do not normally use such large script files (we do actually profoundly dislike them),
+but do instead use smaller, task-oriented bash library files (like libfile.bash) that
+are included via source (.) to better categorize and classify routines. This is, alas,
+not the case for these scripts. The reason is that we have seen several differing versions
+of the same task on different Broad Institute scripts. We'll eventually make each function
+more general so that they can be conceptually classified and moved to library files, but 
+it will take some time for testing. Curiously, the GATK team seems to be going in the
+same direction with their scripts now, so maybe we will be able to use their snippets
+to accelerate our own work.
 
 
 ## NYU based best-practices workflows
