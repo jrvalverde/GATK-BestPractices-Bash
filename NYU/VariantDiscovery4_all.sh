@@ -40,8 +40,8 @@ raw_snps=$raw_variants.snps
 raw_indels=$raw_variants.indels
 filtered_snps=$raw_snps.filtered
 filtered_indels=$raw_indels.filtered
-annotated_snps=$filtered_snps.ann
-annotated_indels=$filtered_indels.ann
+annotated_snps=$filtered_snps.snpEff.ann
+annotated_indels=$filtered_indels.snpEff.ann
 
 gatk=$HOME/contrib/gatk4/gatk
 snpEff_path=$HOME/contrib/snpEff/snpEff
