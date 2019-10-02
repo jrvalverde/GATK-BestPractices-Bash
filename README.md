@@ -1,5 +1,5 @@
 # GATK-BP-bash
-# Bash scripts implementing GATK Best Practices Workflows
+# Bash scripts implementing the Best Practices Workflows of the GATK team at the Broad Institute
 
 These scripts have been developed by José R. Valverde and Lorena Magraner at CNB-CSIC
 
