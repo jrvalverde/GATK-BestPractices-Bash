@@ -14,6 +14,33 @@
 ## Copyright Broad Institute, 2019
 #
 
+# This script is intended to be used with a collection of G.VCF files.
+#
+#	The idea here is that when you have enough samples, you can use
+# them to identify meaningless variants and tell them apart from the
+# probably meaningful ones by comparing them to each other.
+#
+#	Thus, starting from a collection of G.VCF files, we will collect
+# all of them, use all them together to train a VQSR filter and then
+# apply the filter to the variant calling files. Actually, we'll do 
+# better than that: we will build TWO filters, using specific heuristics
+# for each: one for INDELs and one for SNPs, and apply each filter to the
+# corresponding set of variants.
+#
+#	In the process we will also carry out a number of quality checks
+# to gather statistics about our data and will save the models created.
+#
+#	Since we start from a set of G.VCF files, we need to run a separate
+# script/workflow first to obtain these, such as 
+#	gatk4-BP2019-preprocessing-for-variant-discovery.sh
+# followed by
+#	gatk4-BP2019-pe-single-sample-preproc-to-GVCFs.sh
+#
+# or better and simpler:
+# 	gatk4-BP2019-pe-single-sample-wf+filtering.sh
+#
+# NOTE: the actual protocol is the last function in this file
+
 #mydir=`dirname "$0"`
 mydir=`dirname "${BASH_SOURCE[0]}"`
 
@@ -101,6 +128,15 @@ contamination_sites_mu="${broad_reference}/Homo_sapiens_assembly38.contam.mu"
 contamination_sites_V="${broad_reference}/Homo_sapiens_assembly38.contam.V"
 
 ## "KNOWN SITES RESOURCES"
+
+# Known sites resource, not used in training: dbSNP
+# 
+# This resource is a SNP call set that has not been validated to a high degree
+# of confidence (truth=false). The program will not use the variants in this
+# resource to train the recalibration model (training=false). However, the
+# program will use these to stratify output metrics such as Ti/Tv ratio by
+# whether variants are present in dbsnp or not (known=true). The prior
+# likelihood usually assigned to these variants is Q2 (36.90%).
 dbSNP_vcf=( 
 #	"$gatk_bundle_dir/dbsnp_138.hg38.vcf.gz"
 #        "$gatk_bundle_dir/dbsnp_144.hg38.vcf.gz"
@@ -108,21 +144,51 @@ dbSNP_vcf=(
 	"$broad_reference/Homo_sapiens_assembly38.dbsnp138.vcf"
 )
 dbSNP_vcf="$broad_reference/Homo_sapiens_assembly38.dbsnp138.vcf"
+
+# Non-true sites training resource: 1000G
+# 
+# This resource is a set of high-confidence SNP sites produced by the 1000
+# Genomes Project. The program will consider that the variants in this resource
+# may contain true variants as well as false positives (truth=false), and will
+# use them to train the recalibration model (training=true). The prior
+# likelihood we assign to these variants is Q10 (%).
 G1000_vcf="$gatk_bundle_dir/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+
+# True sites training resource: Omni
+# 
+# This resource is a set of polymorphic SNP sites produced by the Omni
+# genotyping array. The program will consider that the variants in this
+# resource are representative of true sites (truth=true), and will use them to
+# train the recalibration model (training=true). The prior likelihood we assign
+# to these variants is Q12 (93.69%).
 omni_vcf="$gatk_bundle_dir/1000G_omni2.5.hg38.vcf"
+
 Mills_vcf="$gatk_bundle_dir/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+
 axiomPoly_vcf="$gatk_bundle_dir/Axiom_Exome_Plus.genotypes.all_populations.poly.hg38.vcf.gz"
+
+# True sites training resource: HapMap
+#
+# This resource is a SNP call set that has been validated to a very high degree
+# of confidence. The program will consider that the variants in this resource
+# are representative of true sites (truth=true), and will use them to train the
+# recalibration model (training=true). We will also use these sites later on to
+# choose a threshold for filtering variants based on sensitivity to truth
+# sites. The prior likelihood we assign to these variants is Q15 (96.84%).
 hapmap_vcf=( 
 	"$gatk_bundle_dir/hapmap_3.3.hg38.vcf"
 	"$gatk_bundle_dir/hapmap_3.3.grch38_pop_stratified_af.vcf"
 )
 hapmap_vcf="$gatk_bundle_dir/hapmap_3.3.hg38.vcf.gz"
+
 known_indels_sites_VCFs=(
 #    "$gatk_bundle_dir/dbsnp_138.hg38.vcf.gz"
 #    "$gatk_bundle_dir/1000G_phase1.indels.hg19.sites.vcf"
     "$gatk_bundle_dir/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
     "${broad_reference}/Homo_sapiens_assembly38.known_indels.vcf.gz"
 )
+##################### END OF THE DEFAULT VALUES ####################
+################## OVERRIDEN IN gatk4-BP2019.in.sh #################
 
 
 # LOAD USER CONFIGURATION OPTIONS
@@ -345,6 +411,7 @@ function create_sample_name_map_from_GVCF_dir() {
     ### subsequent default assignment for missing parameters
     if [ $# -ne 1 ] ; then
         echo "Usage: ${FUNCNAME[0]} gvcf_directory"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 "
     fi
@@ -391,6 +458,7 @@ function create_sample_name_map_from_uBam_list_v2() {
     ### subsequent default assignment for missing parameters
     if [ $# -ne 1 ] ; then
         echo "Usage: ${FUNCNAME[0]} uBam.list"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 "
     fi
@@ -447,6 +515,7 @@ function create_sample_name_map_from_uBam_list_v1() {
     ### subsequent default assignment for missing parameters
     if [ $# -ne 1 ] ; then
         echo "Usage: ${FUNCNAME[0]} uBam.list"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 "
     fi
@@ -493,6 +562,7 @@ function import_gvcfs()
 {
     if [ $# -ne 4 ] ; then
         echo "Usage: ${FUNCNAME[0]} sample_map reference interval_list work_dir"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2 $3 $4"
     fi
@@ -558,6 +628,7 @@ function import_gvcfs()
 # This will use the contents of the workspace containing all imported
 # GVCFs to create a joint file and a combined selection of variants
 # using the specified output file name.
+#
 # The output files will be
 #	$joint_gvcf_dir/joint_gvcf.vcf.gz
 #	$joint_gvcf_dir/joint_gvcf_combined.g.vcf
@@ -571,6 +642,7 @@ function import_gvcfs()
 function genotype_gvcfs() {
     if [ $# -ne 4 ] ; then
         echo "Usage: ${FUNCNAME[0]} work_dir reference intervals joint_gvcf"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2 $3$ $4"
     fi
@@ -644,6 +716,7 @@ function genotype_gvcfs() {
 function filter_variants() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} [joint_vcf] [filtered_vcf]"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2"
     fi
@@ -692,7 +765,8 @@ function filter_variants() {
 # Usage:
 #	make_nocall_file filtered_vcf resulting_nocall_vcf
 #
-#	The nocall file will not be further used in the analysis 
+#	Note: The nocall file will not be further used in the analysis 
+# and hence we will not document this function much more.
 #
 # (c) CNB-CSIC. 2019
 # Released under a LGPL or EU-LGPL license
@@ -700,6 +774,7 @@ function filter_variants() {
 function make_nocall_file() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} var_filtered var_filtered_nocall"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2"
     fi
@@ -740,6 +815,7 @@ function make_sites_only_vcf() {
     #	=> some annotations (like GQ) will disappear
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} var_filtered var_filtered_sites_only"
+	return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2"
     fi
@@ -781,6 +857,7 @@ function make_sites_only_vcf() {
 function recalibrate_indels() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} sites_only_vcf recal_indels_vcf"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2"
     fi
@@ -908,6 +985,7 @@ function recalibrate_indels() {
 function recalibrate_snps() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} sites_only_vcf recal_snps_vcf"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2"
     fi
@@ -1059,6 +1137,7 @@ function recalibrate_snps() {
 function add_indel_vqsr() {
     if [ $# -ne 4 ] ; then
         echo "Usage: ${FUNCNAME[0]} sites_only_vcf indels_vcf indels_tranches indels_vqsr"
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2 $3 $4"
     fi
@@ -1153,7 +1232,8 @@ function add_snps_vqsr() {
 #
 function collect_metrics() {
     if [ $# -ne 3 ] ; then
-        echo "Usage: ${FUNCNAME[0]} sites_only_vcf intervals_list metrics_prefix" ; return
+        echo "Usage: ${FUNCNAME[0]} sites_only_vcf intervals_list metrics_prefix" 
+        return
     else
         echo ">>> ${FUNCNAME[0]} $1 $2 $3"
     fi
