@@ -31,12 +31,17 @@
 ## - A clean BAM file and its index, suitable for variant discovery analyses.
 ##
 ##
-## LICENSING : 
+##
+## LICENSING OF THE ORIGINAL CROMWELL WORKFLOW: 
 ## This script is released under the WDL source code license (BSD-3) (see LICENSE in 
 ## https://github.com/broadinstitute/wdl). Note however that the programs it calls may 
 ## be subject to different licenses. Users are responsible for checking that they are
 ## authorized to run all programs before running this script. Please see the dockers
 ## for detailed licensing information pertaining to the included programs.
+
+# NOTE: the actual workflow is the last function defined in this file.
+#	THIS WORKFLOW IS NOW SUPERSEDED BY 
+#		gatk4-BP2019-pe-single-sample-wf+filtering.sh
 
 set -x
 DEBUG='NO'
@@ -75,6 +80,9 @@ known_indels_sites_VCFs=(
     "$gatk_bundle_dir/1000G_phase1.indels.hg19.sites.vcf"
 #	Homo_sapiens_assembly38.known_indels.vcf.gz	N/A for hg19
 )
+
+##################### END OF THE DEFAULT VALUES ####################
+################## OVERRIDEN IN gatk4-BP2019.in.sh #################
 
 # get actual definitions from a local file
 if [ -s gatk4-BP2019.in.sh ] ; then
@@ -139,6 +147,8 @@ GatherBamFiles_mem_size="3 GB"
 mem_size="7 GB"
 
 ## ALL TOGETHER FILE NAME
+#	This file name will be used for a file containing ALL alignments
+# ensembled together.
 ensemble_name=$study_name.$ref_name
 
 ## LIST OF BAM FILES TO PROCESS
@@ -150,10 +160,19 @@ readarray -t flowcell_unmapped_bams < $flowcell_unmapped_bams_list
 
 ## TASK DEFINITIONS
 
-# Get version of BWA
+## GetBwaVersion()
+#
+# Usage:
+#	bwa_version=`GetBwaVersion`
+#
+# Get version of BWA installed on this system
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GetBwaVersion () {
   
-    # Not setting "set -o pipefail" here because /bwa has a rc=1 and we don't want to allow rc=1 to succeed 
+    # Not setting "set -o pipefail" here because "bwa" has a rc=1 and we don't want to allow rc=1 to succeed 
     # because the sed may also fail with that error and that is something we actually want to fail on.
     ${bwa_path}/bwa 2>&1 | \
     grep -e '^Version' | \
@@ -161,20 +180,54 @@ function GetBwaVersion () {
 }
 
 
+## SamToFastqAndBwaMem()
+#
+# Usage:
+#	SamToFastqAndBwaMem unmapped.bam
+#
 # Read unmapped BAM, convert on-the-fly to FASTQ and stream to BWA MEM 
 # for alignment
 #
 #	we get		original.bam
 #	we produce	original.aligned.bam
 #
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function SamToFastqAndBwaMem () {
+    # check that the number of arguments is correct and produce an
+    # appropriate message
+    if [ $# -ne 1 ] ; then
+        echo "Usage: ${FUNCNAME[0]} umapped_bam"
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $*"
+        # FUNCNAME is an array containing the names of the functions called
+        # in an array with the latest function being first (i.e. it is a heap)
+        # e.g. if we are in funcA, FUNCNAME[0]='funcA'. Now if within
+        # funcA, we call funcB, we'll have FUNCNAME[0]='funcB' and 
+        # FUNCNAME[1]='funcA'. And so on...
+        # Here it allows us to copy/paste the code between functions without
+        # worrying for the actual function name: FUNCNAME[0] will always refer
+        # to the function we are in
+        # NOTE that we could also make a function to print error messages for
+        # its parent, caller function by using FUNCNAME[1]
+        # e.g.:
+        # function print_args() { echo ">>> ${FUNCNAME[1]} $*" }
+        # or for usage message
+        # function usage() { echo "USage: ${FUNCNAME[1]} $1" }
+    fi
 
     set -o pipefail
     set -e
     
-    # input_bam is a full-length absolute path name
     unmapped_bam=$1
-    echo ">>> SamToFastqAndBwaMem $unmapped_bam"
+    # Check it exists
+    if [ ! -e "${umapped_bam}" ] ; then
+        echo ">>> ERROR ${FUNCNAME[0]}: ${unmapped_bam} does not exist!"
+        return
+    fi
+    echo ">>> ${FUNCNAME[0]} $unmapped_bam"
     
     # Get the basename, i.e. strip the filepath and the extension
     bam_basename=`basename $unmapped_bam $unmapped_bam_suffix`
@@ -184,10 +237,18 @@ function SamToFastqAndBwaMem () {
     bash_ref_fasta=${ref_fasta}
 
     bwa_commandline="bwa mem -p -v 3 -t ${num_cpu} -Y ${bash_ref_fasta}"
+    #	-t $num_cpu : use as many threads as CPUs have been selected
+    #	we should consider adding
+    #	-M : Mark shorter split hits as secondary for Picard compatibility
+    #	-R "@RG\tID:$readgroup_id\tLB:$library\tPL:$platform\tSM:$sample_id" : 
+    #		Complete read group header line. '\t' can be used in STR 
+    #		and will be converted to a TAB in the output SAM. The read 
+    #		group ID will be attached to every read in the output. 
+    #		An example is "@RG\tID:foo\tSM:bar". [null]
 
-    if [ ! -s ${output_unmerged_bam} ] ; then
+    if [ ! -s "${output_unmerged_bam}" ] ; then
 	mkdir -p $align_dir
-        if [ ! -s $bam_basename.fastq ] ; then
+        if [ ! -s "${bam_basename}.fastq" ] ; then
 	    echo ">>> Generating $bam_basename.fastq"
             
             # convert to FastQ, pipe to bwa for alignment and to sam for bam comversion
@@ -197,38 +258,68 @@ function SamToFastqAndBwaMem () {
             $gatk_exec \
                   SamToFastq \
 	          -INPUT=${unmapped_bam} \
-	          -FASTQ=$bam_basename.fastq \
+	          -FASTQ=${bam_basename}.fastq \
 	          -INTERLEAVE=true \
 	          -NON_PF=true 
 	fi
         echo ">>> Aligning and making ${output_unmerged_bam}"
-        ${bwa_path}${bwa_commandline} $bam_basename.fastq   \
-            2> >(tee ${output_bam_basename}.bwa.stderr.log >&2) \
-            > $bam_basename.sam
-        samtools view -1 $bam_basename.sam > ${output_unmerged_bam}
-        rm -f $bam_basename.fastq $bam_basename.sam
+        ${bwa_path}${bwa_commandline} "$bam_basename.fastq"   \
+            2> >(tee "${output_bam_basename}.bwa.stderr.log" >&2) \
+            > "$bam_basename.sam"
+        samtools view -1 "$bam_basename.sam" > "${output_unmerged_bam}"
+        rm -f "$bam_basename.fastq" "$bam_basename.sam"
     fi
 
 }
 
 
-# Merge original input uBAM file with BWA-aligned BAM file
+## MergeBamAlignment()
+# Usage:
+#	MergeBamAlignment unmapped.bam
+#
+# Merge original input uBAM file with BWA-aligned BAM file. IMPORTANT: note
+# that we will build the name of the aligned BAM from the name of the
+# unmapped BAM. That is the reason we don't demand the name of the aligned
+# BAM, but it implies that a properly named unalined BAM *MUST* exist.
 #
 #	we get		original.bam
 #	we use		original.aligned.bam
 #	we produce	original.aligned.merged.bam
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function MergeBamAlignment () {
+    # check that the number of arguments is correct and produce an
+    # appropriate message
+    if [ $# -ne 1 ] ; then
+        echo "Usage: ${FUNCNAME[0]} umapped_bam"
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $*"
+    fi
+
     unmapped_bam=$1
-    
-    echo ">>> MergeBamAlignment $unmapped_bam"
+    if [ ! -e "$unmapped_bam" ] ; then
+        echo ">>> ERROR ${FUNCNAME[0]}: $unampped_bam does not exist!"
+        return
+    fi
+    echo ">>> ${FUNCNAME[0]} $unmapped_bam"
 
     # set the bash variable needed for the command-line
     bash_ref_fasta=${ref_fasta}
     bam_basename=`basename $unmapped_bam $unmapped_bam_suffix`
     unmerged_aligned_bam=$align_dir/$bam_basename.aligned.bam
     output_bam=$align_dir/${bam_basename}.aligned.merged.bam
+
+    # check that the unmerged aligned bam does exist
+    if [ ! -s "$unmerged_aligned_bam" ] ; then
+        echo ">>> ERROR ${FUNCNAME[0]}: $unmerged_aligned_bam does not exist!"
+        return
+    fi
     
-    if [ ! -s $output_bam ] ; then
+    # we enclose it in quotes in case $output_bam is empty or has spaces
+    if [ ! -s "$output_bam" ] ; then
 	echo ">>> Merging BAM alignment with original unmapped bam"
         ${gatk_exec} --java-options "-Dsamjdk.compression_level=${compression_level} ${MergeBamAlignment_java_opt}" \
           MergeBamAlignment \
@@ -261,25 +352,45 @@ function MergeBamAlignment () {
 }
 
 
+## MarkDulicates()
+#
+# Usage:
+#	MarkDuplicates input1.bam [input2.bam] ...
+#
 # Mark duplicate reads to avoid counting non-independent observations
-# May work with only one or an array of many files.
+#
+# May work with only one or with an array of many files.
 # If an array is used, then $ensemble_name ($study_name$ref_name) will be 
-# used for output combining all of them
+# used for the output file that combines all of them.
 #
 #	we get		x.aligned.merged.bam
 #	we produce	x.aligned.merged.duplicates_marked.bam
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function MarkDuplicates() {
+    # check that the number of arguments is correct and produce an
+    # appropriate message
+    if [ $# -eq 0 ] ; then
+        echo "Usage: ${FUNCNAME[0]} input1_bam [input2.bam] ..."
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $*"
+    fi
     
     input_bams=( $@ )
     
-    echo ">>> MarkDuplicates" ${input_bams[@]}
+    echo ">>> ${FUNCNAME[0]}" ${input_bams[@]}
     
     if [ ${#input_bams[@]} -gt 1 ] ; then
         # use a summary name
         #ensemble_name=$study_name.$ref_name	# defined at the top
         output_bam_basename=${ensemble_name}
     else
-        # use a file specific name
+        # use a file specific name ($input_bams without subindex returns
+        # the first element in the array, which in this case has only
+        # on element).
         input_bam=$input_bams
         output_bam_basename=`basename $input_bam .bam`
     fi
@@ -288,10 +399,16 @@ function MarkDuplicates() {
 
     # prepare argument list of input files
     input_list=''
-    for i in ${input_bams[@]} ; do input_list="$input_list --INPUT $i" ; done
+    for i in ${input_bams[@]} ; do 
+        if [ ! -e "$i" ] ; then
+            echo ">>> WARNING ${FUNCNAME[0]}: $i does not exist! Ignoring it!!!"
+	else
+	    input_list="$input_list --INPUT $i" 
+        fi
+    done
     
     
-    if [ ! -s ${output_bam} ] ; then
+    if [ ! -s "${output_bam}" ] ; then
         # This task is assuming query-sorted input so that the Secondary and 
         # Supplementary reads get marked correctly. 
         # This works because the output of BWA is query-grouped and therefore,
@@ -313,17 +430,34 @@ function MarkDuplicates() {
 
 
 
-
+## SortAndFixTags()
+#
+# Usage:
+#	SortAndFixTags unsorted.bam
+#
 # Sort BAM file by coordinate order and fix tag values for NM and UQ
 #
 #	we get		aligned.merged.duplicates_marked.bam
 #	we produce	aligned.merged.duplicate_marked.sorted.bam
 #
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function SortAndFixTags() {
-
-    input_bam=$1
+    # check that the number of arguments is correct and produce an
+    # appropriate message
+    if [ $# -ne 1 ] ; then
+        echo "Usage: ${FUNCNAME[0]} input_bam"
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $*"
+    fi
     
-    echo ">>> SortAndFixTags $input_bam"
+    input_bam=$1
+    if [ ! -e "$input_bam" ] ; then
+        echo ">>> ERROR ${FUNCNAME[0]}: $input_bam does not exist!"
+        return
+    fi
     
     unsorted_bam_base=`basename $input_bam .bam`
     output_bam=$align_dir/${unsorted_bam_base}.sorted.bam
@@ -332,7 +466,7 @@ function SortAndFixTags() {
 
     echo ">>> Sorting $input_bam"
     ### May need to split the command in two, even if it eats up extra space
-    if [ ! -s $output_bam ] ; then
+    if [ ! -s "$output_bam" ] ; then
     #if [ "NO" == "YES" ] ; then
          ${gatk_exec} \
            --java-options "-Dsamjdk.compression_level=${compression_level} ${SortAndFixTags_java_opt_sort}" \
@@ -352,6 +486,29 @@ function SortAndFixTags() {
            --CREATE_MD5_FILE true \
            --REFERENCE_SEQUENCE ${ref_fasta}
     fi
+    #	SORT_ORDER: Sort order of output file Required. Possible values: 
+    #		{unsorted, queryname, coordinate, duplicate}
+    #	VALIDATION_STRINGENCY: Validation stringency for all SAM files 
+    #		read by this program. Setting stringency to SILENT can 
+    #		improve performance when processing a BAM file in which 
+    #		variable-length data (read, qualities, tags) do not 
+    #		otherwise need to be decoded. Default value: STRICT. 
+    #		This option can be set to 'null' to clear the default value. 
+    #		Possible values: {STRICT, LENIENT, SILENT}
+    #	CREATE_INDEX: Whether to create a BAM index when writing a 
+    #		coordinate-sorted BAM file. Default value: false. This 
+    #		option can be set to 'null' to clear the default value. 
+    #		Possible values: {true, false}
+    #	MAX_RECORDS_IN_RAM: When writing SAM files that need to be sorted, 
+    #		this will specify the number of records stored in RAM before 
+    #		spilling to disk. Increasing this number reduces the number 
+    #		of file handles needed to sort a SAM file, and increases the 
+    #		amount of RAM needed. Default value: 500000. This option can 
+    #		be set to 'null' to clear the default value.
+    #	TMP_DIR: Default value: null. This option may be specified 0 or 
+    #		more times.
+
+
     # if the above failed for any reason, try again in two steps
     if [ ! -s $output_bam ] ; then
         if [ ! -s sorted.bam ] ; then
@@ -386,6 +543,8 @@ function SortAndFixTags() {
 
 # Generate sets of intervals for scatter-gathering over chromosomes
 # UNUSED FOR NOW
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
 function CreateSequenceGroupingTSV() {
 
   if [ ! -s sequence_grouping.txt -o ! -s sequence_grouping_with_unmapped.txt ] 
@@ -433,13 +592,41 @@ PYCODE
 
 }
 
-# Generate Base Quality Score Recalibration (BQSR) model
+## BQSRecalibrator
+#
+# Usage:
+#	BQSRecalibrator input_bam interval1 [interval2] ...
+#
+# Generate Base Quality Score Recalibration (BQSR) model for a BAM file
+# To speed computation we will only process the specified intervals.
+#
+# We get: a bam file and a list of intervals
+# We use: several auxiliary files specified in global variables that
+#	may be tuned in the configuration file
+# We produce: a recalibration model
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function BQSRecalibrator() {
+    # check that the number of arguments is correct and produce an
+    # appropriate message
+    if [ $# -lt 2 ] ; then
+        echo "Usage: ${FUNCNAME[0]} input_bam interval1 [interval2] ..."
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $*"
+    fi
+
     input_bam=$1
     shift
     sequence_group_interval=( $@ )
 
-    echo ">>> BQSRecalibrating $input_bam"
+    if [ ! -e "$input_bam" ] ; then
+        echo ">>> ERROR ${FUNCNAME[0]}: $input_bam does not exist!"
+        return
+    fi
+
     # either we do it for all sequence group intervals at once
     # or we generate one different recalibration_report for each
     # interval, so we can later gather all together in 
@@ -490,9 +677,18 @@ function BQSRecalibrator() {
 }
 
 
+## GatherBqsrReports()
+#
+# Usage:
+#	GatherBqsrReports report1 report2...
+#
 # Combine multiple recalibration tables from scattered BQSRecalibrator runs
 # Note that when run from GATK 3.x the tool is not a walker and is invoked 
 # differently.
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GatherBqsrReports {
     input_bqsr_reports=( $@ )
   
@@ -512,10 +708,15 @@ function GatherBqsrReports {
 }
 
 
+## ApplyBQSR()
+#
 # Apply Base Quality Score Recalibration (BQSR) model
 # using a previously computed BQSR report (by BQSRecalibrator /
 # GatherBqsrReports)
-
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ApplyBQSR() {
     input_bam=$1
     shift
@@ -555,10 +756,20 @@ function ApplyBQSR() {
 }
 
 
+## GatherBamFiles()
+#
+# Usage:
+#	GatherBamFiles file1.bam file2.bam ...
+#
 # Combine multiple recalibrated BAM files from scattered ApplyRecalibration 
 # runs
+#
 # This should also allow to gather all duplicates_marked.bam files into a
 # single one instead of doing MarkDuplicates for all
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GatherBamFiles() {
     input_bams=( $@ )
   
@@ -588,6 +799,9 @@ function GatherBamFiles() {
 ############################################################################
 
 
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function PreProcessingForVariantDiscovery_GATK4() {
     # Get the version of BWA to include in the PG record in the header of the BAM produced 
     # by MergeBamAlignment. 

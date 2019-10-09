@@ -235,7 +235,18 @@ unmapped_bam=$1
 
 
 
-
+## PairedEndSingleSampleWorkflow()
+#
+# Usage:
+#	PairedEndSingleSampleWorkflow unmapped_bam
+#
+# Description
+#	Take an unmapped bam file and produce a GVCF output file
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function PairedEndSingleSampleWorkflow() {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} unmapped_bam" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -824,7 +835,17 @@ function PairedEndSingleSampleWorkflow() {
 
 
 
-# Collect sequencing yield quality metrics
+## CollectQualityYieldMetrics()
+#
+# Usage:
+#	CollectQualityYieldMetrics input_bam
+#
+# Description:
+# 	Collect sequencing yield quality metrics
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectQualityYieldMetrics() {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -846,7 +867,17 @@ function CollectQualityYieldMetrics() {
 }
 
 
-# Get version of BWA
+## GetBwaVersion()
+#
+# Usage:
+#	bwa_vers=`GetBwaVersion`
+#
+# Description:
+# 	Get version of BWA
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GetBwaVersion() {
     $tools/bwa 2>&1 | \
     grep -e '^Version' | \
@@ -856,7 +887,19 @@ function GetBwaVersion() {
 }
 
 
-# Read unmapped BAM, convert on-the-fly to FASTQ and stream to BWA MEM for alignment, then stream to MergeBamAlignment
+
+## SamToFastqAndBwaMemAndMba()
+#
+# Usage:
+#	SamToFastqAndBwaMemAndMba input_bam
+#
+# Description:
+# 	Read unmapped BAM, convert on-the-fly to FASTQ and stream to BWA 
+# MEM for alignment, then stream to MergeBamAlignment
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function SamToFastqAndBwaMemAndMba() {
     if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
     else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -947,9 +990,20 @@ function SamToFastqAndBwaMemAndMba() {
 }
 
 
-# Collect base quality and insert size metrics
-# QC the aligned but unsorted readgroup BAM
-# no reference as the input here is unsorted, providing a reference would cause an error
+## CollectUnsortedReadgroupBamQualityMetrics()
+#
+# Usage:
+#	CollectUnsortedReadgroupBamQualityMetrics input_bam
+#
+# Description:
+# 	Collect base quality and insert size metrics
+# 	QC the aligned but unsorted readgroup BAM
+# 	No reference as the input here is unsorted: providing a reference 
+# would cause an error
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectUnsortedReadgroupBamQualityMetrics() {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -991,10 +1045,21 @@ function CollectUnsortedReadgroupBamQualityMetrics() {
 }
 
 
-# Mark duplicate reads to avoid counting non-independent observations
+## MarkDuplicates()
+#
+# Usage:
+#	MarkDuplicates [output_base_name] input_bam ...
+#
+# Description:
+# 	Mark duplicate reads to avoid counting non-independent observations
 # Aggregate aligned+merged flowcell BAM files and mark duplicates
-# We take advantage of the tool's ability to take multiple BAM inputs and write out a single output
-# to avoid having to spend time just merging BAM files.
+# We take advantage of the tool's ability to take multiple BAM inputs and 
+# write out a single output to avoid having to spend time just merging BAM 
+# files.
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function MarkDuplicates() {
     if [ $# -lt 1 ] ; then 
         echo "Err: ${FUNCNAME[0]} [output_base_name] input_bam ..." ; exit 1 
@@ -1077,8 +1142,15 @@ function MarkDuplicates() {
     #  }
 }
 
-
-# Sort BAM file by coordinate order and fix tag values for NM and UQ
+## SortSam()
+# Usage:
+#	SortSam input_bam
+# Description:
+# 	Sort BAM file by coordinate order and fix tag values for NM and UQ
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function SortSam() {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -1108,8 +1180,19 @@ function SortSam() {
   #}
 }
 
-# Collect alignment summary and GC bias quality metrics
-function CollectReadgroupBamQualityMetrics () 
+
+## CollectReadgroupBamQualityMetrics()
+# Usage:
+#	CollectReadgroupBamQualityMetrics input_bam
+#
+# Description:
+# 	Collect alignment summary and GC bias quality metrics
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
+function CollectReadgroupBamQualityMetrics() 
 {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -1145,7 +1228,18 @@ function CollectReadgroupBamQualityMetrics ()
   #}
 }
 
-# Collect quality metrics from the aggregated bam
+
+## CollectAggregationMetrics()
+# Usage:
+#	CollectAggregationMetrics input_bam
+#
+# Description:
+# 	Collect quality metrics from the aggregated bam
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectAggregationMetrics ()
 {
   if [ $# -ne 1 ] ; then echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
@@ -1199,7 +1293,18 @@ function CollectAggregationMetrics ()
 
 }
 
-# Check that the fingerprints of separate readgroups all match
+
+## CrossCheckFingerprints()
+# Usage:
+#	CrossCheckFingerprints [output_base_name] input_bam ...
+#
+# Description:
+# 	Check that the fingerprints of separate readgroups all match
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CrossCheckFingerprints() {
     if [ $# -lt 1 ] ; then 
         echo "Err: ${FUNCNAME[0]} [output_base_name] input_bam ..." ; exit 1 
@@ -1258,7 +1363,18 @@ function CrossCheckFingerprints() {
     #  File metrics = "${metrics_filename}"
 }
 
-# Check that the fingerprint of the sample BAM matches the sample array
+
+## CheckFingerprint()
+# Usage:
+#	CheckFingerprint input_bam sample
+#
+# Description:
+# 	Check that the fingerprint of the sample BAM matches the sample array
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CheckFingerprint() {
   if [ $# -ne 2 ] ; then echo "Err: ${FUNCNAME[0]} input_bam sample" ; exit 1 
   else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -1291,7 +1407,18 @@ function CheckFingerprint() {
   #  File detail_metrics = "${output_basename}.fingerprinting_detail_metrics"
 }
 
-# Generate sets of intervals for scatter-gathering over chromosomes
+
+## CreateSequenceGroupingTSV()
+# Usage:
+#	CreateSequenceGroupingTSV
+#
+# Description:
+# 	Generate sets of intervals for scatter-gathering over chromosomes
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CreateSequenceGroupingTSV() {
   if [ $# -ne 0 ] ; then 
       echo "Err: ${FUNCNAME[0]}" ; exit 1 
@@ -1348,7 +1475,18 @@ PYCODE
   #  Array[Array[String]] sequence_grouping_with_unmapped = read_tsv("sequence_grouping_with_unmapped.txt")
 }
 
-# Generate Base Quality Score Recalibration (BQSR) model
+
+## BaseRecalibrator()
+# Usage:
+#	BaseRecalibrator input_bam intervals
+#
+# Description:
+# 	Generate Base Quality Score Recalibration (BQSR) model
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function BaseRecalibrator() {
     if [ $# -ne 2 ] ; then echo "Err: ${FUNCNAME[0]} input_bam intervals" ; exit 1 
     else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -1403,8 +1541,17 @@ function BaseRecalibrator() {
 }
 
 
-
-# Apply Base Quality Score Recalibration (BQSR) model
+## ApplyBQSR()
+# Usage:
+#	ApplyBQSR input_bam bqsr_report intervals
+#
+# Description:
+# 	Apply Base Quality Score Recalibration (BQSR) model
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ApplyBQSR() {
   if [ $# -ne 3 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam bqsr_report intervals" ; exit 1 
@@ -1461,7 +1608,18 @@ function ApplyBQSR() {
   #}
 }
 
-# Combine multiple recalibration tables from scattered BaseRecalibrator runs
+
+## GatherBqsrReports()
+# Usage:
+#	GatherBqsrReports ensemble_name input_bam input_bam ...
+#
+# Description:
+# 	Combine multiple recalibration tables from scattered BaseRecalibrator runs
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GatherBqsrReports() {
   if [ $# -lt 3 ] ; then 
       echo "Err: ${FUNCNAME[0]} ensemble_name input_bam input_bam ..." ; exit 1 
@@ -1489,7 +1647,18 @@ function GatherBqsrReports() {
   #}
 }
 
-# Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
+
+## GatherBamFiles()
+# Usage:
+#	GatherBamFiles ensemble_name input_bam input_bam ...
+#
+# Description:
+# 	Combine multiple recalibrated BAM files from scattered ApplyRecalibration runs
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function GatherBamFiles() {
   if [ $# -lt 3 ] ; then 
       echo "Err: ${FUNCNAME[0]} ensemble_name input_bam input_bam ..." ; exit 1 
@@ -1520,6 +1689,16 @@ function GatherBamFiles() {
   #}
 }
 
+## CheckPreValidation()
+# Usage:
+#	CheckPreValidation dup_metrics chim_metrics maxdup maxchim
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CheckPreValidation() {
   if [ $# -lt 4 ] ; then 
       echo "Err: ${FUNCNAME[0]} dup_metrics chim_metrics maxdup maxchim" ; exit 1 
@@ -1585,6 +1764,18 @@ CODE
   #}
 }
 
+
+
+## ValidateSamFile()
+# Usage:
+#	ValidateSamFile input_cram is_outlier max_out [ignore_str]
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ValidateSamFile {
   if [ $# -lt 4 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_cram is_outlier max_out [ignore_str]" ; exit 1 
@@ -1623,9 +1814,19 @@ function ValidateSamFile {
 }
 
 
-# IMPORTANT
+## CollectWgsMetrics()
+# Usage:
+#	CollectWgsMetrics input_bam interval_list [read_size]
+#
+# Description:
+# 	IMPORTANT
 # Note that these tasks will break if the read lengths in the bam are greater 
 # than 250.
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectWgsMetrics() {
   if [ $# -ne 3 -a $# -ne 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam interval_list [read_size]" ; exit 1 
@@ -1661,7 +1862,18 @@ function CollectWgsMetrics() {
   #}
 }
 
-# Collect raw WGS metrics (commonly used QC thresholds)
+
+## CollectRawWgsMetrics()
+# Usage:
+#	CollectRawWgsMetrics input_bam interval_list [read_size]
+#
+# Description:
+# 	Collect raw WGS metrics (commonly used QC thresholds)
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectRawWgsMetrics {
   if [ $# -ne 3 -a $# -ne 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam interval_list [read_size]" ; exit 1 
@@ -1697,7 +1909,18 @@ function CollectRawWgsMetrics {
   #}
 }
 
-# Generate a checksum per readgroup
+
+## CalculateReadGroupChecksum()
+# Usage:
+#	CalculateReadGroupChecksum input_bam
+#
+# Description:
+# 	Generate a checksum per readgroup
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CalculateReadGroupChecksum() {
   if [ $# -ne 1 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
@@ -1721,6 +1944,12 @@ function CalculateReadGroupChecksum() {
   #}
 }
 
+
+## CheckContamination()
+# Usage:
+#	CheckContamination input_bam underestimation_factor
+#
+# Description:
 # Notes on the contamination estimate:
 # The contamination value is read from the FREEMIX field of the selfSM file output by verifyBamId
 #
@@ -1736,6 +1965,11 @@ function CalculateReadGroupChecksum() {
 # contamination estimate for use in variant calling
 #
 # NOTE: This function produces a floating number in stdout and a selfSM file.
+#
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
 #
 function CheckContamination() {
   if [ $# -ne 2 ] ; then 
@@ -1818,9 +2052,19 @@ CODE
 }
 
 
+## ScatterIntervalList()
+# Usage:
+#	ScatterIntervalList interval_list scatter_count mult_break
+#
+# Description:
 # This task calls picard's IntervalListTools to scatter the input interval list into scatter_count sub interval lists
 # Note that the number of sub interval lists may not be exactly equal to scatter_count.  There may be slightly more or less.
 # Thus we have the block of python to count the number of generated sub interval lists.
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ScatterIntervalList() {
   if [ $# -ne 3 ] ; then 
       echo "Err: ${FUNCNAME[0]} interval_list scatter_count mult_break" ; exit 1 
@@ -1867,7 +2111,17 @@ CODE
 }
 
 
-# Call variants on a single sample with HaplotypeCaller to produce a GVCF
+## HaplotypeCaller()
+# Usage:
+#	HaplotypeCaller input_bam interval_list [contamination]
+#
+# Description:
+# 	Call variants on a single sample with HaplotypeCaller to produce a GVCF
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function HaplotypeCaller() {
   if [ $# -ne 3 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam interval_list [contamination]" ; exit 1 
@@ -1950,6 +2204,16 @@ function HaplotypeCaller() {
 
 
 
+## HardFilterVcf()
+# Usage:
+#	HardFilterVcf input_vcf interval_list
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function HardFilterVcf() {
   if [ $# -ne 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_vcf interval_list" ; exit 1 
@@ -1980,6 +2244,16 @@ function HardFilterVcf() {
 }
 
 
+## CNNScoreVariants()
+# Usage:
+#	CNNScoreVariants input_vcf [bamout]
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CNNScoreVariants() {
     if [ $# -gt 2 ] ; then
         echo ">>> ${FUNCNAME[0]} input_vcf [bamout]"
@@ -2024,6 +2298,17 @@ function CNNScoreVariants() {
 
 }
 
+
+## FilterVariantTranches()
+# Usage:
+#	FilterVariantTranches input_vcf
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function FilterVariantTranches() {
   if [ $# -ne 1 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_vcf " ; exit 1 
@@ -2068,6 +2353,16 @@ function FilterVariantTranches() {
 }
 
 
+## ExtractSNPs()
+# Usage:
+#	 ExtractSNPs input_vcf
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ExtractSNPs() {
   if [ $# -ne 1 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_vcf" ; exit 1 
@@ -2090,6 +2385,16 @@ function ExtractSNPs() {
 }
 
 
+## ExtractInDels()
+# Usage:
+#	ExtractInDels input_vcf
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ExtractInDels() {
   if [ $# -ne 1 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_vcf" ; exit 1 
@@ -2112,7 +2417,17 @@ function ExtractInDels() {
 }
 
 
-HardFilterSNPs() {
+## HardFilterSNPs()
+# Usage:
+#	HardFilterSNPs input_vcf
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
+function HardFilterSNPs() {
     if [ $# -ne 1 ] ; then 
         echo "Err: ${FUNCNAME[0]} input_vcf" ; exit 1 
     else echo -e "\n>>> ${FUNCNAME[0]}" $* ; fi
@@ -2158,6 +2473,17 @@ HardFilterSNPs() {
     # filter will be marked as PASS
 }
 
+
+## HardFilterInDels()
+# Usage:
+#	HardFilterInDels input_vcf
+#
+# Description:
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function HardFilterInDels() {
     if [ $# -ne 1 ] ; then 
         echo "Err: ${FUNCNAME[0]} input_vcf" ; exit 1 
@@ -2199,6 +2525,16 @@ function HardFilterInDels() {
 }
 
 
+## HardFilterVcf_LPZ()
+# Usage:
+#	HardFilterVcf_LPZ input_vcf interval_list
+#
+# Description:
+#	This sould apply a more stringent set of legacy filters
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function HardFilterVcf_LPZ() {
     if [ $# -ne 2 ] ; then 
         echo "Err: ${FUNCNAME[0]} input_vcf interval_list" ; exit 1 
@@ -2257,7 +2593,17 @@ function HardFilterVcf_LPZ() {
 }
 
 
-# Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
+## MergeVCFs()
+# Usage:
+#	MergeVCFs [output_vcf_name] input_bam ...
+#
+# Description:
+# 	Combine multiple VCFs or GVCFs from scattered HaplotypeCaller runs
+#
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function MergeVCFs() {
   if [ $# -lt 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} [output_vcf_name] input_bam ..." ; exit 1 
@@ -2290,7 +2636,17 @@ function MergeVCFs() {
 }
 
 
-# Validate a GVCF with -gvcf specific validation
+## ValidateGVCF()
+#
+# Usage:
+#	ValidateGVCF input_gvcf interval_list
+#
+# Description:
+# 	Validate a GVCF with -gvcf specific validation
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ValidateGVCF() {
   if [ $# -lt 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_gvcf interval_list" ; exit 1 
@@ -2324,7 +2680,18 @@ function ValidateGVCF() {
   fi
 }
 
-# Collect variant calling metrics from GVCF output
+
+## CollectGvcfCallingMetrics()
+#
+# Usage:
+#	CollectGvcfCallingMetrics input_gvcf interval_list
+#
+# Description:
+# 	Collect variant calling metrics from GVCF output
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectGvcfCallingMetrics() {
   if [ $# -lt 2 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_gvcf interval_list" ; exit 1 
@@ -2359,8 +2726,18 @@ function CollectGvcfCallingMetrics() {
   #}
 }
 
-# Convert BAM file to CRAM format
+## ConvertToCram()
+#
+# Usage:
+#	ConvertToCram input_bam
+#
+# Description:
+# 	Convert BAM file to CRAM format
 # Note that reading CRAMs directly with Picard is not yet supported
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ConvertToCram() {
   if [ $# -ne 1 ] ; then 
       echo "Err: ${FUNCNAME[0]} input_bam" ; exit 1 
@@ -2399,7 +2776,24 @@ function ConvertToCram() {
   #}
 }
 
+
+## CollectHsMetrics()
+#
+# Usage:
+#	CollectHsMetrics input_bam interval_list bait_list
+#
+# Description:
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectHsMetrics() {
+    if [ $# -ne 3 ] ; then
+        echo "Usage: ${FUNCNAME[0]} aligned_bam interval_list bait_list"
+        return
+    else
+        echo ">>> ${FUNCNAME[0]} $1 "
+    fi
 #  input {
 #    File input_bam
 #    File input_bam_index
@@ -2411,10 +2805,10 @@ function CollectHsMetrics() {
 #    Int preemptible_tries
 #    Int memory_multiplier = 1
 #  }
-    input_bam=$aligned_bam
-    target_interval_list=$2
-    bait_interval_list=$3
-    metrics_filename=${input_bam%.bam}".hybrid_selection_metrics"
+    local input_bam=$1
+    local target_interval_list=$2
+    local bait_interval_list=$3
+    local metrics_filename=${input_bam%.bam}".hybrid_selection_metrics"
 
   # There are probably more metrics we want to generate with this tool
   if [ ! -e "${metrics_filename}" ] ; then
@@ -2438,6 +2832,16 @@ function CollectHsMetrics() {
 }
 
 
+## AnnotateVariants()
+#
+# Usage:
+#	AnnotateVariants input_bam input_vcf
+#
+# Description:
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function AnnotateVariants() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} input_bam input_vcf"

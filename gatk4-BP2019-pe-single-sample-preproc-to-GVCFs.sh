@@ -14,6 +14,10 @@
 ## Copyright Broad Institute, 2019
 #
 
+# NOTE: the actual workflow is the last function defined in this file.
+#	THIS WORKFLOW IS NOW SUPERSEDED BY 
+#		gatk4-BP2019-pe-single-sample-wf+filtering.sh
+
 set -x
 
 DEBUG='NO'
@@ -76,9 +80,18 @@ wgs_calling_interval_list="$study_interval_list"
 wgs_evaluation_interval_list="$study_interval_list"
 
 
-
-# Identify GVFCs
-function HaplotypeCallerGvcf_GATK4 {
+## HaplotypeCallerGvcf_GATK4()
+#
+# Usage:
+# 	HaplotypeCallerGvcf_GATK4 recal.bam ref.name interval_list
+#
+# Identify GVFCs (at one point we also supported GATK V3, and even V2, 
+# but we no longer do)
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
+function HaplotypeCallerGvcf_GATK4() {
     if [ $# -ne 3 ] ; then
         echo "Usage: ${FUNCNAME[0]} recal.bam ref.name interval_list"
     else
@@ -113,13 +126,37 @@ function HaplotypeCallerGvcf_GATK4 {
         -I ${input_bam} \
         -O ${output_filename} \
 	$gvcf_opt
+#
+# Additional possible options (the use has been changing quite a lot and there
+# are tons of variations reported as standard workflow in the Internet). We are
+# using just the ones listed in the latest (as of 2019) workflows.
 #        -L ${interval_list} \
-#        --dbsnp $gatk_bundle_dir/dbsnp_138.hg19.vcf \
+#        --dbsnp $gatk_bundle_dir/dbsnp_138.hg19.vcf :
+#		rsIDs from this file are used to populate the ID column of 
+#		the output. Also, the DB INFO flag will be set when a
+#		ppropriate. dbSNP is not used in any way for the calculations 
+#		themselves.
+#	--genotyping_mode DISCOVERY 
+#	--doNotRunPhysicalPhasing 
+#	--variant_index_type LINEAR 
+#	--variant_index_parameter 128000
+
+
+
     fi
 }
 
 
-# Validate a GVCF with -gvcf specific validation
+## ValidateGVCF()
+#
+# Usage:
+#	ValidateGVCF input_vcf
+#
+# Validate a GVCF with gvcf specific validation
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function ValidateGVCF() {
     if [ $# -ne 1 ] ; then
         echo "Usage: ${FUNCNAME[0]} input_vcf"
@@ -129,7 +166,7 @@ function ValidateGVCF() {
     local input_vcf=$1
     
     echo ">>> Validating $input_vcf"
-    #return   ############################ we are not doing this
+    #return   #<<<########################### uncomment to avoid this step
     # NOTE: this may fail validation on exome data
     # which is why we use --warnOnErrors
     $CALL $gatk_exec --java-options "-Xms3000m" \
@@ -143,7 +180,17 @@ function ValidateGVCF() {
         --warnOnErrors
 }
 
+
+## CollectGvcfCallingMetrics()
+#
+# Usage:
+#	CollectGvcfCallingMetrics input.vcf
+#
 # Collect variant calling metrics from GVCF output
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function CollectGvcfCallingMetrics() {
     if [ $# -ne 1 ] ; then
         echo "Usage: ${FUNCNAME[0]} input_vcf"
@@ -181,6 +228,19 @@ function CollectGvcfCallingMetrics() {
 }
 
 
+## AnnotateVariants()
+#
+# Usage:
+#	AnnotateVariants input_bam input_vcf
+#
+#	Annotate the variants with the help of the input BAM file and
+# dbSNP database. Note that we could also run snpEff and use the vcf file
+# produced to include additional annotation in this function. We should
+# actually consider it at some point.
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function AnnotateVariants() {
     if [ $# -ne 2 ] ; then
         echo "Usage: ${FUNCNAME[0]} input_bam input_vcf"
@@ -231,7 +291,20 @@ function AnnotateVariants() {
     fi
 }
 
-
+## single_sample_gvcfs()
+#
+# Usage:
+#	single_sample_gvcfs recal.bam ref.name interval_list
+#
+#	This is the actual workflow. Produce GVCFs from the preprocessed,
+# recalibrated BAM aignment files.
+#
+#	THIS WORKFLOW IS NOW SUPERSEDED BY 
+#		gatk4-BP2019-pe-single-sample-wf+filtering.sh
+#
+# (c) CNB-CSIC. 2019
+# Released under a LGPL or EU-LGPL license
+#
 function single_sample_gvcfs() {
     if [ $# -ne 3 ] ; then
         echo "Usage: ${FUNCNAME[0]} recal.bam ref.name interval_list"
