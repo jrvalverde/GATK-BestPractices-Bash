@@ -26,8 +26,8 @@ And, of course, we want to thank you in advance for your kindness.
 ## Quality scripts
 We have tried our best to produce high quality code, well commented, structured, split in sensible functions 
 and with strong built-in checks. There is a lot that can still be done, but if you look inside these scripts
-you'll find a wealth of Bash programming tricks and tips at play and will discover that script programming 
-is suitable for comples tasks too.
+you'll find a wealth of Bash programming tricks and tips at play and will discover that Bash script programming 
+is suitable for complex tasks too and that it can simplify your HPC workflow management with increased efficiency.
 
 ## Workflows based on the GATK-team Best-Practices
  
